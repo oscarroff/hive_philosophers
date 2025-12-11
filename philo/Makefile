@@ -6,7 +6,7 @@
 #    By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 14:57:58 by thblack-          #+#    #+#              #
-#    Updated: 2025/10/06 19:08:33 by thblack-         ###   ########.fr        #
+#    Updated: 2025/12/11 11:01:01 by thblack-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ OBJ_DIR		= obj/$(MODE)
 INC_DIR		= inc
 
 # PROJECT SOURCES: Explicitly states
-SRC_FILES	= philo.c
+# SRC_FILES	= philo.c
 SRC_DEV		= $(shell find src -name "*.c")
 SRC			= $(SRC_DEV)
 # SRC			= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
@@ -43,7 +43,7 @@ CC			= cc
 CFLAGS		= -Wall -Wextra -Werror
 CGENERAL	= -O2
 CFAST		= -O3
-CDEBUG		= -g -O0
+CDEBUG		= -g3 -O0
 MAKE_QUIET	= --no-print-directory
 
 # REMOVE
@@ -77,17 +77,15 @@ endif
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LIBFT_A)
+$(NAME): $(OBJ)
 	$(START)
 	$(BUILD_PROJ)
 	@$(CC) $(CFLAGS) $(INC) $(OBJ) $(LIBS) -o $(NAME)
 	$(COMPILED)
 	$(FINISH)
 
-$(OBJ_DIRS):
-	@$(MKDIR) $@
-
- $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER) | $(OBJ_DIRS)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER)
+	@$(MKDIR) $(dir $@)
 	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 -include $(DEPS)
@@ -122,11 +120,11 @@ run: $(NAME)
 
 runval: $(NAME)
 	@echo "Running valgrind $(NAME)..."
-	@valgrind --leak-check=full ./$(NAME)
+	@valgrind --leak-check=full --suppressions=mac.supp ./$(NAME)
 
 runleak: $(NAME)
 	@echo "Running valgrind leaks $(NAME)..."
-	@valgrind --leak-check=full --show-leak-kinds=yes --track-fds=all ./$(NAME)
+	@valgrind --leak-check=full --show-leak-kinds=yes --track-fds=all --suppressions=mac.supp ./$(NAME)
 
 retry: clean all run
 
