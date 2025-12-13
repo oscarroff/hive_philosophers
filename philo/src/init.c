@@ -33,7 +33,7 @@ bool	valid_input(char **argv)
 	return (true);
 }
 
-static void	philo_init(t_vars *p)
+static void	vars_init(t_vars *p)
 {
 	p->n = 0;
 	p->die = 0;
@@ -41,14 +41,15 @@ static void	philo_init(t_vars *p)
 	p->sleep = 0;
 	p->fed = 0;
 	p->i = 1;
-	p->t = NULL;
 	p->f = NULL;
+	p->end = false;
+	p->t = NULL;
 	pthread_mutex_init(&p->m, NULL);
 }
 
 bool	parse_args(t_vars *p, char **argv)
 {
-	philo_init(p);
+	vars_init(p);
 	if (!ft_atoui(&p->n, argv[1])
 			|| !ft_atoui(&p->die, argv[2])
 			|| !ft_atoui(&p->eat, argv[3])
