@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 18:07:57 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/11 13:11:43 by thblack-         ###   ########.fr       */
+/*   Updated: 2025/12/13 13:06:25 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,16 @@
 # include <unistd.h>
 # include <stdatomic.h>
 
-// Codes for error tracking
 // Successful execution
 # define SUCCESS 1
 // Unsuccessful execution
 # define FAIL 0
 // Error encountered
 # define ERROR -1
+// Conversion to hold seconds and miliseconds in one variable
+# define USEC_PER_SEC 1000000LL
+// Char check for updating last meal time
+# define SAVOURING 'v'
 
 // Struct for each philosopher
 // x: unique number of each philosopher
@@ -81,10 +84,21 @@ typedef struct s_vars
 }	t_vars;
 
 // philo
+void	clean_up(t_vars *v);
 
 // Initialisation
-bool	valid_input(char **argv);
 bool	parse_args(t_vars *p, char **argv);
+
+// Threads
+bool	threads_and_forks_init(t_vars *v);
+bool	threads_run(t_vars *v);
+bool	threads_join(t_vars *v);
+
+// Philosophise
+void	*philosophise(void *data);
+
+// Do Things
+int		go_eat(t_philo *p, t_vars *v);
 
 // Utilities
 int		ft_isdigit(int c);
@@ -92,5 +106,6 @@ int		ft_issign(int c);
 int		ft_isspace(int c);
 bool	ft_naun(const char *nptr);
 bool	ft_atoui(unsigned int *nbr, const char *nptr);
+size_t	ft_strlen(const char *s);
 
 #endif
