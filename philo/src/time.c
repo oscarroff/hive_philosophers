@@ -21,3 +21,21 @@ int	time_fetch(uint64_t *time)
 	*time = (tv.tv_sec * (uint64_t)1000) + (tv.tv_usec / (uint64_t)1000);
 	return (SUCCESS);
 }
+
+int	ft_usleep(uint32_t time)
+{
+	uint64_t	start;
+	uint64_t	current;
+
+	start = 0;
+	current = 0;
+	if (time_fetch(&start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	while (1)
+	{
+		if (time_fetch(&current) == ERROR)
+			return (ft_error("time_fetch() fail", NULL));
+		if (start + (uint64_t)time >= current)
+			return (SUCCESS);
+	}
+}

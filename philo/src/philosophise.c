@@ -63,8 +63,9 @@ static bool	philo_init(t_philo *p, t_data *v)
 		p->fork_r = &v->f[p->x];
 	if (gettimeofday(&time, NULL) == -1)
 		return (false);
-	p->ate_s = time.tv_sec;
-	p->ate_u = time.tv_usec;
+	p->ate = 0;
+	if (time_fetch(&p->ate) == ERROR)
+		return (false);
 	if (pthread_mutex_init(&p->lock_l, NULL))
 		return (false);
 	if (pthread_mutex_init(&p->lock_r, NULL))
@@ -89,7 +90,7 @@ static int	you_died(t_philo *p, t_data *v, struct timeval time)
 {
 	if (pthread_mutex_lock(&v->m))
 		return (ERROR);
-	printf("%ld%ld %u died\n", time.tv_sec, time.tv_usec, p->x);
+	printf("%" PRIu64 " %u died\n", time, p->x);
 	v->end = true;
 	if (pthread_mutex_unlock(&v->m))
 		return (ERROR);
@@ -98,17 +99,12 @@ static int	you_died(t_philo *p, t_data *v, struct timeval time)
 
 static int	did_you_starve(t_philo *p, t_data *v)
 {
-	struct timeval	time;
-	time_t			sec_diff;
-	uint32_t		elapsed;
+	uint64_t	time;
 
-	if (gettimeofday(&time, NULL) == -1)
+	time = 0;
+	if (time_fetch(&time) == ERROR)
 		return (ERROR);
-	sec_diff = time.tv_sec - p->ate_s;
-	if (sec_diff > UINT_MAX / USEC_PER_SEC)
-		return (you_died(p, v, time));
-	elapsed = (sec_diff * USEC_PER_SEC) + (time.tv_usec - p->ate_u);
-	if (elapsed > v->die)
+	if (time - p->ate > v->die)
 		return (you_died(p, v, time));
 	return (FAIL);
 }
