@@ -13,7 +13,6 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-# include <libc.h>
 # include <pthread.h>
 # include <signal.h>
 # include <stdbool.h>
@@ -22,6 +21,7 @@
 # include <sys/time.h>
 # include <unistd.h>
 # include <stdatomic.h>
+# include <limits.h>
 
 // Successful execution
 # define SUCCESS 1

@@ -56,7 +56,7 @@ static int	what_you_doing(char *s, t_philo *p, t_data *v)
 	{
 		if (pthread_mutex_lock(&v->m))
 			return (FAIL);
-		printf("%ld%06u %u is %s\n", time.tv_sec, time.tv_usec, p->x, s);
+		printf("%ld%ld %u is %s\n", time.tv_sec, time.tv_usec, p->x, s);
 		if (pthread_mutex_unlock(&v->m))
 			return (FAIL);
 	}
@@ -75,13 +75,13 @@ static int	take_cutlery(t_philo *p, t_data *v)
 		if (pthread_mutex_lock(&p->lock_l))
 			return (ERROR);
 		*p->fork_l = true;
-		printf("%ld%06u %u has taken a fork\n", t.tv_sec, t.tv_usec, p->x);
+		printf("%ld%ld %u has taken a fork\n", t.tv_sec, t.tv_usec, p->x);
 		if (pthread_mutex_unlock(&p->lock_l))
 			return (ERROR);
 		if (pthread_mutex_lock(&p->lock_r))
 			return (ERROR);
 		*p->fork_r = true;
-		printf("%ld%06u %u has taken a fork\n", t.tv_sec, t.tv_usec, p->x);
+		printf("%ld%ld %u has taken a fork\n", t.tv_sec, t.tv_usec, p->x);
 		if (pthread_mutex_unlock(&p->lock_r))
 			return (ERROR);
 		flag = SUCCESS;

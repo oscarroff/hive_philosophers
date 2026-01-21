@@ -89,7 +89,7 @@ static int	you_died(t_philo *p, t_data *v, struct timeval time)
 {
 	if (pthread_mutex_lock(&v->m))
 		return (ERROR);
-	printf("%ld%06u %u died\n", time.tv_sec, time.tv_usec, p->x);
+	printf("%ld%ld %u died\n", time.tv_sec, time.tv_usec, p->x);
 	v->end = true;
 	if (pthread_mutex_unlock(&v->m))
 		return (ERROR);
