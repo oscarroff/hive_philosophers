@@ -33,6 +33,10 @@
 # define USEC_PER_SEC 1000000LL
 // Char check for updating last meal time
 # define SLEEPING 'l'
+// Odd result of % 2 for odd numbered philosophers
+# define ODD 1
+// Even result of % 2 for even numbered philosophers
+# define EVEN 0
 
 // Struct for each philosopher
 // x: unique number of each philosopher

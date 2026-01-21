@@ -39,7 +39,7 @@ void	*philosophise(void *data)
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0)
 			|| did_you_starve(&p, v))
 			return (philo_exit(&p));
-		if (v->end == false && *p.fork_l == false && *p.fork_r == false)
+		if (v->end == false)
 		{
 			flag = go_eat(&p, v);
 			if (flag == FAIL)
@@ -47,6 +47,24 @@ void	*philosophise(void *data)
 		}
 	}
 	return (0);
+}
+
+static int	wait_turn(t_philo *p, t_data *v)
+{
+	if (p->x % 2 == ODD && p->x != v->n && v->n > 1)
+		return (SUCCESS);
+	else if (p->x % 2 == EVEN)
+	{
+		if (ft_usleep(v->eat) == ERROR)
+			return (ft_error("wait_turn() fail", NULL));
+		return (SUCCESS);
+	}
+	else
+	{
+		if (ft_usleep(v->eat * 2) == ERROR)
+			return (ft_error("wait_turn() fail", NULL));
+		return (SUCCESS);
+	}
 }
 
 static bool	philo_init(t_philo *p, t_data *v)
@@ -69,6 +87,8 @@ static bool	philo_init(t_philo *p, t_data *v)
 		pthread_mutex_destroy(&p->lock_l);
 		return (false);
 	}
+	if (wait_turn(p, v) == ERROR)
+		return (false);
 	return (true);
 }
 

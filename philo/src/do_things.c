@@ -13,14 +13,19 @@
 #include "philo.h"
 
 static int	what_you_doing(char *s, t_philo *p, t_data *v);
-static int	take_cutlery(t_philo *p, t_data *v);
+static int	take_cutlery_odd(t_philo *p, t_data *v);
+static int	take_cutlery_even(t_philo *p, t_data *v);
 static int	return_cutlery(t_philo *p, t_data *v);
 
 int	go_eat(t_philo *p, t_data *v)
 {
-	int				flag;
+	int	flag;
 
-	flag = take_cutlery(p, v);
+	flag = 0;
+	if (p->x % 2 == ODD)
+		flag = take_cutlery_odd(p, v);
+	else if (p->x % 2 == EVEN)
+		flag = take_cutlery_even(p, v);
 	if (flag != SUCCESS)
 		return (flag);
 	if (!what_you_doing("eating", p, v))
@@ -62,14 +67,46 @@ static int	what_you_doing(char *s, t_philo *p, t_data *v)
 	return (SUCCESS);
 }
 
-static int	take_cutlery(t_philo *p, t_data *v)
+static int	take_cutlery_odd(t_philo *p, t_data *v)
 {
 	uint32_t	time;
 	int			flag;
 
+	while (*p->fork_r == true && v->end == false)
+		ft_usleep(1);
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
-	if (*p->fork_l == false && *p->fork_r == false && v->end == false)
+	if (*p->fork_r == false && v->end == false)
+	{
+		if (pthread_mutex_lock(&p->lock_r))
+			return (ERROR);
+		*p->fork_r = true;
+		printf("%u %u has taken a fork\n", time, p->x);
+		if (pthread_mutex_unlock(&p->lock_r))
+			return (ERROR);
+		if (pthread_mutex_lock(&p->lock_l))
+			return (ERROR);
+		*p->fork_r = true;
+		printf("%u %u has taken a fork\n", time, p->x);
+		if (pthread_mutex_unlock(&p->lock_l))
+			return (ERROR);
+		flag = SUCCESS;
+	}
+	else
+		flag = FAIL;
+	return (flag);
+}
+
+static int	take_cutlery_even(t_philo *p, t_data *v)
+{
+	uint32_t	time;
+	int			flag;
+
+	while (*p->fork_l == true && v->end == false)
+		ft_usleep(1);
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	if (*p->fork_l == false && v->end == false)
 	{
 		if (pthread_mutex_lock(&p->lock_l))
 			return (ERROR);

@@ -46,7 +46,7 @@ int	ft_usleep(uint32_t time)
 	{
 		if (time_init(&current) == ERROR)
 			return (ft_error("time_init() fail", NULL));
-		if (start + time >= current)
+		if (current >= start + time)
 			return (SUCCESS);
 	}
 }
