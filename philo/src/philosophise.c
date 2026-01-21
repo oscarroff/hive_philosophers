@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:13:48 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:36:52 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 15:50:15 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static bool	philo_init(t_philo *p, t_data *v);
 static int	num_fetch(t_philo *p, t_data *v);
 static int	did_you_starve(t_philo *p, t_data *v);
-static int	you_died(t_philo *p, t_data *v, uint64_t time);
+static int	you_died(t_philo *p, t_data *v, uint32_t time);
 static void	*philo_exit(t_philo *p);
 
 static void	*philo_exit(t_philo *p)
@@ -102,11 +102,11 @@ static int	num_fetch(t_philo *p, t_data *v)
 	return (SUCCESS);
 }
 
-static int	you_died(t_philo *p, t_data *v, uint64_t time)
+static int	you_died(t_philo *p, t_data *v, uint32_t time)
 {
 	if (pthread_mutex_lock(&v->m))
 		return (ERROR);
-	printf("%lu %u died\n", time, p->x);
+	printf("%u %u died\n", time, p->x);
 	v->end = true;
 	if (pthread_mutex_unlock(&v->m))
 		return (ERROR);

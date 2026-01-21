@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 17:58:39 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:25:55 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:26:04 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,6 @@ void	philo_main_exit(t_data *v)
 		free(v->t);
 	if (v->f)
 		free(v->f);
+	pthread_mutex_unlock(&v->m);
 	pthread_mutex_destroy(&v->m);
 }

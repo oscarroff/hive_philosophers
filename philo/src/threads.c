@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:10:04 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:30:24 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:00:42 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ bool	threads_and_forks_init(t_data *v)
 {
 	uint32_t	i;
 
-	v->t = malloc(sizeof(pthread_t) * v->n);
+	v->t = malloc(sizeof(pthread_t) * v->n + 1);
 	v->f = malloc(sizeof(atomic_bool) * v->n);
+	v->ate = malloc(sizeof(uint32_t) * v->n);
+	v->dead = malloc(sizeof(atomic_bool) * v->n);
 	if (!v->t || !v->f)
 	{
 		ft_error("malloc() fail", v);
@@ -26,7 +28,12 @@ bool	threads_and_forks_init(t_data *v)
 	}
 	i = 0;
 	while (i < v->n)
-		v->f[i++] = false;
+	{
+		v->f[i] = false;
+		v->ate[i] = 0;
+		v->dead[i] = false;
+		i++;
+	}
 	return (true);
 }
 
@@ -34,12 +41,17 @@ bool	threads_run(t_data *v)
 {
 	uint32_t	i;
 
-	i = 0;
 	if (time_init(&v->start) == ERROR)
 	{
 		ft_error("time_init() fail", NULL);
 		return (false);
 	}
+	if (pthread_create(&v->t[0], NULL, monitor, v))
+		{
+			ft_error("pthread_create() fail", v);
+			return (false);
+		}
+	i = 1;
 	while (i < v->n)
 	{
 		if (pthread_create(&v->t[i], NULL, philosophise, v))

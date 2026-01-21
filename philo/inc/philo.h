@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 18:07:57 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:26:48 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:14:31 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@
 # define ODD 1
 // Even result of % 2 for even numbered philosophers
 # define EVEN 0
+// Thread successful execution
+# define THREAD_SUCCESS NULL
+// Thread unsuccessful execution
+# define THREAD_ERROR ((void *)-1)
 
 // Struct for each philosopher
 // x: unique number of each philosopher
@@ -83,6 +87,8 @@ typedef struct s_data
 	uint32_t		start;
 	atomic_uint		i;
 	atomic_bool		*f;
+	uint32_t		*ate;
+	atomic_bool		*dead;
 	atomic_bool		end;
 	pthread_t		*t;
 	pthread_mutex_t	m;
@@ -98,6 +104,9 @@ bool	parse_args(t_data *p, char **argv);
 bool	threads_and_forks_init(t_data *v);
 bool	threads_run(t_data *v);
 bool	threads_join(t_data *v);
+
+// Monitor
+void	*monitor(void *data);
 
 // Philosophise
 void	*philosophise(void *data);
