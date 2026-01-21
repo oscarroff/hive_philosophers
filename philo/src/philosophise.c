@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:13:48 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 16:56:29 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 18:30:09 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	*philo_exit(t_philo *p)
 	return (THREAD_SUCCESS);
 }
 
-void	*philosophise(void *data)
+void	*philo_odd(void *data)
 {
 	t_data			*v;
 	t_philo			p;
@@ -35,12 +35,40 @@ void	*philosophise(void *data)
 	while (1)
 	{
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
+		{
+			v->done[p.x - 1] = true;
 			return (philo_exit(&p));
+		}
 		else
 		{
-			flag = go_eat(&p, v);
+			flag = go_eat_odd(&p, v);
 			if (flag == FAIL)
-				return (THREAD_SUCCESS);
+				return (THREAD_ERROR);
+		}
+	}
+}
+
+void	*philo_even(void *data)
+{
+	t_data			*v;
+	t_philo			p;
+	int				flag;
+
+	v = data;
+	if (!philo_init(&p, v))
+		return (THREAD_ERROR);
+	while (1)
+	{
+		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
+		{
+			v->done[p.x - 1] = true;
+			return (philo_exit(&p));
+		}
+		else
+		{
+			flag = go_eat_even(&p, v);
+			if (flag == FAIL)
+				return (THREAD_ERROR);
 		}
 	}
 }
@@ -51,13 +79,13 @@ static int	wait_turn(t_philo *p, t_data *v)
 		return (SUCCESS);
 	else if (p->x % 2 == EVEN)
 	{
-		if (ft_usleep(v->eat) == ERROR)
+		if (ft_usleep(v->eat, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
 	else
 	{
-		if (ft_usleep(v->eat * 2) == ERROR)
+		if (ft_usleep(v->eat * 2, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
@@ -73,9 +101,6 @@ static int	philo_init(t_philo *p, t_data *v)
 		p->fork_r = &v->f[0];
 	else
 		p->fork_r = &v->f[p->x];
-	p->ate = 0;
-	if (time_fetch(&p->ate, v->start) == ERROR)
-		return (ft_error("time_fetch() fail", NULL));
 	if (pthread_mutex_init(&p->lock_l, NULL))
 		return (ft_error("pthread_mutex_init() fail", NULL));
 	if (pthread_mutex_init(&p->lock_r, NULL))
@@ -83,6 +108,8 @@ static int	philo_init(t_philo *p, t_data *v)
 		pthread_mutex_destroy(&p->lock_l);
 		return (ft_error("pthread_mutex_init() fail", NULL));
 	}
+	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
 	if (wait_turn(p, v) == ERROR)
 		return (ft_error("wait_turn() fail", NULL));
 	return (SUCCESS);

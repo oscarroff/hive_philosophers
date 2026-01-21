@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 18:07:57 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 16:45:08 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 18:28:46 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 # define THREAD_SUCCESS NULL
 // Thread unsuccessful execution
 # define THREAD_ERROR ((void *)-1)
+// All philosopher threads closed
+# define DONE 0
 
 // Struct for each philosopher
 // x: unique number of each philosopher
@@ -59,7 +61,6 @@ typedef struct s_philo
 {
 	uint32_t		x;
 	uint32_t		meals;
-	uint32_t		ate;
 	atomic_bool		*fork_l;
 	atomic_bool		*fork_r;
 	pthread_mutex_t	lock_l;
@@ -89,6 +90,7 @@ typedef struct s_data
 	atomic_bool		*f;
 	uint32_t		*ate;
 	atomic_bool		*dead;
+	atomic_bool		*done;
 	atomic_bool		end;
 	pthread_t		*t;
 	pthread_mutex_t	m;
@@ -101,23 +103,25 @@ void	philo_main_exit(t_data *v);
 bool	parse_args(t_data *p, char **argv);
 
 // Threads
-bool	threads_and_forks_init(t_data *v);
-bool	threads_run(t_data *v);
-bool	threads_join(t_data *v);
+int		threads_and_forks_init(t_data *v);
+int		threads_run(t_data *v);
+int		threads_join(t_data *v);
 
 // Monitor
 void	*monitor(void *data);
 
 // Philosophise
-void	*philosophise(void *data);
+void	*philo_odd(void *data);
+void	*philo_even(void *data);
 
 // Do Things
-int		go_eat(t_philo *p, t_data *v);
+int		go_eat_odd(t_philo *p, t_data *v);
+int		go_eat_even(t_philo *p, t_data *v);
 
 // Time
 int		time_init(uint32_t *time);
 int		time_fetch(uint32_t *time, uint32_t start);
-int		ft_usleep(uint32_t time);
+int		ft_usleep(uint32_t time, atomic_bool *end);
 
 // Utilities
 int		ft_isdigit(int c);

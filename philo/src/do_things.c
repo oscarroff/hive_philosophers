@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:15:38 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:22:20 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 18:29:29 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,31 +17,45 @@ static int	take_cutlery_odd(t_philo *p, t_data *v);
 static int	take_cutlery_even(t_philo *p, t_data *v);
 static int	return_cutlery(t_philo *p, t_data *v);
 
-int	go_eat(t_philo *p, t_data *v)
+int	go_eat_odd(t_philo *p, t_data *v)
 {
-	int	flag;
+	if (take_cutlery_odd(p, v) == ERROR)
+		return (ft_error("take_cutlery_odd() fail", NULL));
+	if (what_you_doing("eating", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
+	ft_usleep(v->eat, &v->end);
+	if (return_cutlery(p, v) == ERROR)
+		return (ft_error("return_cutlery() fail", NULL));
+	if (v->end == true)
+		return (SUCCESS);
+	if (what_you_doing("sleeping", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
+	ft_usleep(v->sleep, &v->end);
+	if (v->end == true)
+		return (SUCCESS);
+	if (what_you_doing("thinking", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
+	return (SUCCESS);
+}
 
-	flag = 0;
-	if (p->x % 2 == ODD)
-		flag = take_cutlery_odd(p, v);
-	else if (p->x % 2 == EVEN)
-		flag = take_cutlery_even(p, v);
-	if (flag != SUCCESS)
-		return (flag);
-	if (!what_you_doing("eating", p, v))
-		return (ERROR);
-	usleep(v->eat);
-	if (return_cutlery(p, v) != SUCCESS)
-		return (ERROR);
+int	go_eat_even(t_philo *p, t_data *v)
+{
+	if (take_cutlery_even(p, v) == ERROR)
+		return (ft_error("take_cutlery_even() fail", NULL));
+	if (what_you_doing("eating", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
+	ft_usleep(v->eat, &v->end);
+	if (return_cutlery(p, v) == ERROR)
+		return (ft_error("return_cutlery() fail", NULL));
 	if (v->end == true)
-		return (FAIL);
-	if (!what_you_doing("sleeping", p, v))
-		return (ERROR);
-	usleep(v->sleep);
+		return (SUCCESS);
+	if (what_you_doing("sleeping", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
+	ft_usleep(v->sleep, &v->end);
 	if (v->end == true)
-		return (FAIL);
-	if (!what_you_doing("thinking", p, v))
-		return (ERROR);
+		return (SUCCESS);
+	if (what_you_doing("thinking", p, v) == ERROR)
+		return (ft_error("what_you_doing() fail", NULL));
 	return (SUCCESS);
 }
 
@@ -53,92 +67,74 @@ static int	what_you_doing(char *s, t_philo *p, t_data *v)
 		return (ft_error("time_fetch() fail", NULL));
 	if (s[1] == SLEEPING)
 	{
-		p->ate = time;
+		v->ate[p->x - 1] = time;
 		p->meals++;
 	}
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
 	if (v->end == false)
-	{
-		if (pthread_mutex_lock(&v->m))
-			return (FAIL);
 		printf("%u %u is %s\n", time, p->x, s);
-		if (pthread_mutex_unlock(&v->m))
-			return (FAIL);
-	}
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	return (SUCCESS);
 }
 
 static int	take_cutlery_odd(t_philo *p, t_data *v)
 {
 	uint32_t	time;
-	int			flag;
 
-	while (*p->fork_r == true && v->end == false)
-		ft_usleep(1);
+	time = 0;
+	if (pthread_mutex_lock(&p->lock_r))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	*p->fork_r = true;
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
-	if (*p->fork_r == false && v->end == false)
-	{
-		if (pthread_mutex_lock(&p->lock_r))
-			return (ERROR);
-		*p->fork_r = true;
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	if (v->end == false)
 		printf("%u %u has taken a fork\n", time, p->x);
-		if (pthread_mutex_unlock(&p->lock_r))
-			return (ERROR);
-		if (pthread_mutex_lock(&p->lock_l))
-			return (ERROR);
-		*p->fork_r = true;
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
+	if (pthread_mutex_lock(&p->lock_l))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	*p->fork_l = true;
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	if (v->end == false)
 		printf("%u %u has taken a fork\n", time, p->x);
-		if (pthread_mutex_unlock(&p->lock_l))
-			return (ERROR);
-		flag = SUCCESS;
-	}
-	else
-		flag = FAIL;
-	return (flag);
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
+	return (SUCCESS);
 }
 
 static int	take_cutlery_even(t_philo *p, t_data *v)
 {
 	uint32_t	time;
-	int			flag;
 
-	while (*p->fork_l == true && v->end == false)
-		ft_usleep(1);
+	time = 0;
+	if (pthread_mutex_lock(&p->lock_l))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	*p->fork_l = true;
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
-	if (*p->fork_l == false && v->end == false)
-	{
-		if (pthread_mutex_lock(&p->lock_l))
-			return (ERROR);
-		*p->fork_l = true;
-		printf("%u %u has taken a fork\n", time, p->x);
-		if (pthread_mutex_unlock(&p->lock_l))
-			return (ERROR);
-		if (pthread_mutex_lock(&p->lock_r))
-			return (ERROR);
-		*p->fork_r = true;
-		printf("%u %u has taken a fork\n", time, p->x);
-		if (pthread_mutex_unlock(&p->lock_r))
-			return (ERROR);
-		flag = SUCCESS;
-	}
-	else
-		flag = FAIL;
-	return (flag);
+	printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_lock(&p->lock_r))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	*p->fork_r = true;
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	printf("%u %u has taken a fork\n", time, p->x);
+	return (SUCCESS);
 }
 
 static int	return_cutlery(t_philo *p, t_data *v)
 {
-	int	flag;
-
 	(void)v;
-	if (*p->fork_l == true && *p->fork_r == true)
-	{
-		*p->fork_l = false;
-		*p->fork_r = false;
-		flag = SUCCESS;
-	}
-	else
-		flag = ERROR;
-	return (flag);
+	*p->fork_l = false;
+	*p->fork_r = false;
+	if (pthread_mutex_unlock(&p->lock_l) || pthread_mutex_unlock(&p->lock_r))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
+	return (SUCCESS);
 }

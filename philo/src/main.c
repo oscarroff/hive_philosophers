@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 17:58:39 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 16:26:04 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 18:04:43 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,9 @@ static bool	philo_main(char **argv)
 
 	if (!parse_args(&p, argv) || p.n == 0 || (argv[5] && p.fed == 0))
 		return (true);
-	if (!threads_and_forks_init(&p) || !threads_run(&p) || !threads_join(&p))
+	if (threads_and_forks_init(&p) == ERROR
+		|| threads_run(&p) == ERROR
+		|| threads_join(&p) == ERROR)
 		return (false);
 	philo_main_exit(&p);
 	return (true);
@@ -68,6 +70,11 @@ void	philo_main_exit(t_data *v)
 		free(v->t);
 	if (v->f)
 		free(v->f);
-	pthread_mutex_unlock(&v->m);
+	if (v->ate)
+		free(v->ate);
+	if (v->dead)
+		free(v->dead);
+	if (v->done)
+		free(v->done);
 	pthread_mutex_destroy(&v->m);
 }
