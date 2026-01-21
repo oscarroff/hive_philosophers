@@ -48,6 +48,7 @@ static void	vars_init(t_data *v)
 	v->eat = 0;
 	v->sleep = 0;
 	v->fed = 0;
+	v->start = 0;
 	v->i = 1;
 	v->f = NULL;
 	v->end = false;

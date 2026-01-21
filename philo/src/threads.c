@@ -35,6 +35,11 @@ bool	threads_run(t_data *v)
 	uint32_t	i;
 
 	i = 0;
+	if (time_init(&v->start) == ERROR)
+	{
+		ft_error("time_init() fail", NULL);
+		return (false);
+	}
 	while (i < v->n)
 	{
 		if (pthread_create(&v->t[i], NULL, philosophise, v))

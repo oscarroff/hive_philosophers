@@ -51,7 +51,7 @@ typedef struct s_philo
 {
 	uint32_t		x;
 	uint32_t		meals;
-	uint64_t		ate;
+	uint32_t		ate;
 	atomic_bool		*fork_l;
 	atomic_bool		*fork_r;
 	pthread_mutex_t	lock_l;
@@ -76,6 +76,7 @@ typedef struct s_data
 	uint32_t		eat;
 	uint32_t		sleep;
 	uint32_t		fed;
+	uint32_t		start;
 	atomic_uint		i;
 	atomic_bool		*f;
 	atomic_bool		end;
@@ -101,7 +102,8 @@ void	*philosophise(void *data);
 int		go_eat(t_philo *p, t_data *v);
 
 // Time
-int		time_fetch(uint64_t *time);
+int		time_init(uint32_t *time);
+int		time_fetch(uint32_t *time, uint32_t start);
 int		ft_usleep(uint32_t time);
 
 // Utilities

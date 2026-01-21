@@ -42,20 +42,20 @@ int	go_eat(t_philo *p, t_data *v)
 
 static int	what_you_doing(char *s, t_philo *p, t_data *v)
 {
-	struct timeval	time;
+	uint32_t	time;
 
-	if (gettimeofday(&time, NULL) == -1)
-		return (FAIL);
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
 	if (s[1] == SLEEPING)
 	{
-		p->ate = time.tv_sec;
+		p->ate = time;
 		p->meals++;
 	}
 	if (v->end == false)
 	{
 		if (pthread_mutex_lock(&v->m))
 			return (FAIL);
-		printf("%" PRIu64 " %u is %s\n", time, p->x, s);
+		printf("%u %u is %s\n", time, p->x, s);
 		if (pthread_mutex_unlock(&v->m))
 			return (FAIL);
 	}
@@ -64,23 +64,23 @@ static int	what_you_doing(char *s, t_philo *p, t_data *v)
 
 static int	take_cutlery(t_philo *p, t_data *v)
 {
-	struct timeval	t;
-	int				flag;
+	uint32_t	time;
+	int			flag;
 
-	if (gettimeofday(&t, NULL) == -1)
-		return (ERROR);
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
 	if (*p->fork_l == false && *p->fork_r == false && v->end == false)
 	{
 		if (pthread_mutex_lock(&p->lock_l))
 			return (ERROR);
 		*p->fork_l = true;
-		printf("%" PRIu64 " %u has taken a fork\n", time, p->x);
+		printf("%u %u has taken a fork\n", time, p->x);
 		if (pthread_mutex_unlock(&p->lock_l))
 			return (ERROR);
 		if (pthread_mutex_lock(&p->lock_r))
 			return (ERROR);
 		*p->fork_r = true;
-		printf("%" PRIu64 " %u has taken a fork\n", time, p->x);
+		printf("%u %u has taken a fork\n", time, p->x);
 		if (pthread_mutex_unlock(&p->lock_r))
 			return (ERROR);
 		flag = SUCCESS;

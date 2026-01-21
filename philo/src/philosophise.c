@@ -15,7 +15,7 @@
 static bool	philo_init(t_philo *p, t_data *v);
 static int	num_fetch(t_philo *p, t_data *v);
 static int	did_you_starve(t_philo *p, t_data *v);
-static int	you_died(t_philo *p, t_data *v, struct timeval time);
+static int	you_died(t_philo *p, t_data *v, uint64_t time);
 static void	*philo_exit(t_philo *p);
 
 static void	*philo_exit(t_philo *p)
@@ -51,8 +51,6 @@ void	*philosophise(void *data)
 
 static bool	philo_init(t_philo *p, t_data *v)
 {
-	struct timeval	time;
-
 	if (!num_fetch(p, v))
 		return (false);
 	p->meals = 0;
@@ -61,10 +59,8 @@ static bool	philo_init(t_philo *p, t_data *v)
 		p->fork_r = &v->f[0];
 	else
 		p->fork_r = &v->f[p->x];
-	if (gettimeofday(&time, NULL) == -1)
-		return (false);
 	p->ate = 0;
-	if (time_fetch(&p->ate) == ERROR)
+	if (time_fetch(&p->ate, v->start) == ERROR)
 		return (false);
 	if (pthread_mutex_init(&p->lock_l, NULL))
 		return (false);
@@ -86,11 +82,11 @@ static int	num_fetch(t_philo *p, t_data *v)
 	return (SUCCESS);
 }
 
-static int	you_died(t_philo *p, t_data *v, struct timeval time)
+static int	you_died(t_philo *p, t_data *v, uint64_t time)
 {
 	if (pthread_mutex_lock(&v->m))
 		return (ERROR);
-	printf("%" PRIu64 " %u died\n", time, p->x);
+	printf("%lu %u died\n", time, p->x);
 	v->end = true;
 	if (pthread_mutex_unlock(&v->m))
 		return (ERROR);
@@ -99,10 +95,10 @@ static int	you_died(t_philo *p, t_data *v, struct timeval time)
 
 static int	did_you_starve(t_philo *p, t_data *v)
 {
-	uint64_t	time;
+	uint32_t	time;
 
 	time = 0;
-	if (time_fetch(&time) == ERROR)
+	if (time_fetch(&time, v->start) == ERROR)
 		return (ERROR);
 	if (time - p->ate > v->die)
 		return (you_died(p, v, time));
