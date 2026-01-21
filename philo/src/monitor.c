@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 15:47:46 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 16:25:07 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:49:57 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,13 @@ void	*monitor(void *data)
 	int		flag;
 
 	v = data;
-	if (!monitor_init(&p, v))
-		return THREAD_ERROR;
+	flag = SUCCESS;
+	// if (!monitor_init(&p, v))
+	// 	return (THREAD_ERROR);
 	while (flag == SUCCESS)
-	{
 		flag = check_status(v);
-	}
 	if (flag == ERROR)
-		return THREAD_ERROR;
+		return (THREAD_ERROR);
 	else
-		return THREAD_SUCCESS;
+		return (THREAD_SUCCESS);
 }

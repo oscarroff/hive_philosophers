@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:10:04 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 16:00:42 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:57:48 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ bool	threads_run(t_data *v)
 			return (false);
 		}
 	i = 1;
-	while (i < v->n)
+	while (i < v->n + 1)
 	{
 		if (pthread_create(&v->t[i], NULL, philosophise, v))
 		{
@@ -66,14 +66,23 @@ bool	threads_run(t_data *v)
 
 bool	threads_join(t_data *v)
 {
+	void		*return_val;
+	long		exit_code;
 	uint32_t	i;
 
 	i = 0;
-	while (i < v->n)
+	while (i < v->n + 1)
 	{
-		if (pthread_join(v->t[i], NULL))
+		if (pthread_join(v->t[i], &return_val))
 		{
 			ft_error("pthread_join() fail", v);
+			return (false);
+		}
+		exit_code = (long)return_val;
+		if (exit_code != 0)
+		{
+			printf("%u error: %ld\n", i, exit_code);
+			ft_error("thread fail", v);
 			return (false);
 		}
 		i++;

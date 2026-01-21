@@ -6,23 +6,21 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:13:48 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 15:50:15 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/21 16:56:29 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static bool	philo_init(t_philo *p, t_data *v);
+static int	philo_init(t_philo *p, t_data *v);
 static int	num_fetch(t_philo *p, t_data *v);
-static int	did_you_starve(t_philo *p, t_data *v);
-static int	you_died(t_philo *p, t_data *v, uint32_t time);
 static void	*philo_exit(t_philo *p);
 
 static void	*philo_exit(t_philo *p)
 {
 	pthread_mutex_destroy(&p->lock_l);
 	pthread_mutex_destroy(&p->lock_r);
-	return (0);
+	return (THREAD_SUCCESS);
 }
 
 void	*philosophise(void *data)
@@ -33,20 +31,18 @@ void	*philosophise(void *data)
 
 	v = data;
 	if (!philo_init(&p, v))
-		return (0);
+		return (THREAD_ERROR);
 	while (1)
 	{
-		if (v->end == true || (p.meals >= v->fed && v->fed > 0)
-			|| did_you_starve(&p, v))
+		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 			return (philo_exit(&p));
-		if (v->end == false)
+		else
 		{
 			flag = go_eat(&p, v);
 			if (flag == FAIL)
-				return (philo_exit(&p));
+				return (THREAD_SUCCESS);
 		}
 	}
-	return (0);
 }
 
 static int	wait_turn(t_philo *p, t_data *v)
@@ -56,21 +52,21 @@ static int	wait_turn(t_philo *p, t_data *v)
 	else if (p->x % 2 == EVEN)
 	{
 		if (ft_usleep(v->eat) == ERROR)
-			return (ft_error("wait_turn() fail", NULL));
+			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
 	else
 	{
 		if (ft_usleep(v->eat * 2) == ERROR)
-			return (ft_error("wait_turn() fail", NULL));
+			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
 }
 
-static bool	philo_init(t_philo *p, t_data *v)
+static int	philo_init(t_philo *p, t_data *v)
 {
 	if (!num_fetch(p, v))
-		return (false);
+		return (ft_error("philo_init() fail", NULL));
 	p->meals = 0;
 	p->fork_l = &v->f[p->x - 1];
 	if (p->x == v->n)
@@ -79,48 +75,25 @@ static bool	philo_init(t_philo *p, t_data *v)
 		p->fork_r = &v->f[p->x];
 	p->ate = 0;
 	if (time_fetch(&p->ate, v->start) == ERROR)
-		return (false);
+		return (ft_error("time_fetch() fail", NULL));
 	if (pthread_mutex_init(&p->lock_l, NULL))
-		return (false);
+		return (ft_error("pthread_mutex_init() fail", NULL));
 	if (pthread_mutex_init(&p->lock_r, NULL))
 	{
 		pthread_mutex_destroy(&p->lock_l);
-		return (false);
+		return (ft_error("pthread_mutex_init() fail", NULL));
 	}
 	if (wait_turn(p, v) == ERROR)
-		return (false);
-	return (true);
+		return (ft_error("wait_turn() fail", NULL));
+	return (SUCCESS);
 }
 
 static int	num_fetch(t_philo *p, t_data *v)
 {
 	if (pthread_mutex_lock(&v->m))
-		return (FAIL);
+		return (ft_error("pthread_mutex_lock() fail", NULL));
 	p->x = v->i++;
 	if (pthread_mutex_unlock(&v->m))
-		return (FAIL);
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	return (SUCCESS);
-}
-
-static int	you_died(t_philo *p, t_data *v, uint32_t time)
-{
-	if (pthread_mutex_lock(&v->m))
-		return (ERROR);
-	printf("%u %u died\n", time, p->x);
-	v->end = true;
-	if (pthread_mutex_unlock(&v->m))
-		return (ERROR);
-	return (SUCCESS);
-}
-
-static int	did_you_starve(t_philo *p, t_data *v)
-{
-	uint32_t	time;
-
-	time = 0;
-	if (time_fetch(&time, v->start) == ERROR)
-		return (ERROR);
-	if (time - p->ate > v->die)
-		return (you_died(p, v, time));
-	return (FAIL);
 }
