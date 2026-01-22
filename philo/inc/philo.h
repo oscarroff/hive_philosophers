@@ -22,6 +22,7 @@
 # include <unistd.h>
 # include <stdatomic.h>
 # include <limits.h>
+# include <string.h>
 
 // Successful execution
 # define SUCCESS 1
