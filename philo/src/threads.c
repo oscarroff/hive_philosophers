@@ -19,6 +19,7 @@ int	threads_and_forks_init(t_data *v)
 	v->t = malloc(sizeof(pthread_t) * (v->n + 1));
 	v->f = malloc(sizeof(atomic_bool) * v->n);
 	v->ate = malloc(sizeof(uint32_t) * v->n);
+	v->eating = malloc(sizeof(atomic_bool) * v->n);
 	v->dead = malloc(sizeof(atomic_bool) * v->n);
 	v->done = malloc(sizeof(atomic_bool) * v->n);
 	if (!v->t || !v->f || !v->ate || !v->dead || !v->done)
@@ -29,6 +30,7 @@ int	threads_and_forks_init(t_data *v)
 		memset(&v->t[i], 0, sizeof(pthread_t));
 		v->f[i] = false;
 		v->ate[i] = 0;
+		v->eating[i] = false;
 		v->dead[i] = false;
 		v->done[i] = false;
 		i++;

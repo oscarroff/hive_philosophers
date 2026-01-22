@@ -99,7 +99,7 @@ void	*philo_even(void *data)
 
 static int	wait_turn(t_philo *p, t_data *v)
 {
-	if (p->x % 2 == ODD && p->x != v->n && v->n > 1)
+	if (p->x % 2 == ODD && p->x != v->n)
 		return (SUCCESS);
 	else if (p->x % 2 == EVEN)
 	{

@@ -33,6 +33,8 @@
 // Conversion to hold seconds and miliseconds in one variable
 # define USEC_PER_SEC 1000000LL
 // Char check for updating last meal time
+# define EATING 'a'
+// Char check for updating last meal time
 # define SLEEPING 'l'
 // Odd result of % 2 for odd numbered philosophers
 # define ODD 1
@@ -90,6 +92,7 @@ typedef struct s_data
 	atomic_uint		i;
 	atomic_bool		*f;
 	uint32_t		*ate;
+	atomic_bool		*eating;
 	atomic_bool		*dead;
 	atomic_bool		*done;
 	atomic_bool		end;
