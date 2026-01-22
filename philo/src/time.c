@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <stdatomic.h>
 
 int	time_init(uint32_t *time)
 {
@@ -33,6 +34,17 @@ int	time_fetch(uint32_t *time, uint32_t start)
 	return (SUCCESS);
 }
 
+int	atomic_time_fetch(atomic_uint_fast32_t *time, uint32_t start)
+{
+	uint32_t				now;
+
+	now = 0;
+	if (time_init(&now) == ERROR)
+		return (ft_error("time_init() fail", NULL));
+	*time = now - start;
+	return (SUCCESS);
+}
+
 int	ft_usleep(uint32_t time, atomic_bool *end)
 {
 	uint32_t	start;
@@ -42,6 +54,7 @@ int	ft_usleep(uint32_t time, atomic_bool *end)
 	current = 0;
 	if (time_init(&start) == ERROR)
 		return (ft_error("time_init() fail", NULL));
+
 	while (1)
 	{
 		if (time_init(&current) == ERROR)

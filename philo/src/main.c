@@ -76,6 +76,8 @@ void	philo_main_exit(t_data *v)
 		free(v->t);
 	if (v->f)
 		free(v->f);
+	if (v->flock)
+		free(v->flock);
 	if (v->ate)
 		free(v->ate);
 	if (v->eating)

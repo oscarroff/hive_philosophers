@@ -49,7 +49,7 @@ bool	ft_atoui(unsigned int *nbr, const char *nptr)
 	if (!ft_naun(nptr))
 		return (false);
 	res = ft_super_atoi(nptr);
-	if (res > UINT_MAX || res < 0)
+	if (res > INT_MAX || res < 0)
 		return (false);
 	else
 	{

@@ -29,8 +29,44 @@ static int	philo_lonely_init(t_philo *p, t_data *v)
 	p->meals = 0;
 	p->fork_l = &v->f[0];
 	p->lock_l = &v->flock[0];
-	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
+	if (atomic_time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
+	return (SUCCESS);
+}
+
+static void	everyone_eats(t_philo *p, t_data *v)
+{
+	uint32_t	neighbour;
+
+	if (p->x < v->n)
+		neighbour = p->x;
+	else
+		neighbour = 0;
+	while (v->eating[neighbour] == true)
+		ft_usleep(200, &v->end);
+	return ;
+}
+
+static int	lonely_meal(t_philo *p, t_data *v)
+{
+	uint32_t	time;
+
+	time = 0;
+	if (pthread_mutex_lock(p->lock_l))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	*p->fork_l = true;
+	if (time_fetch(&time, v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	if (v->end == false)
+		printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
+	while (v->end == false)
+		ft_usleep(50, &v->end);
+	if (pthread_mutex_unlock(p->lock_l))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	return (SUCCESS);
 }
 
@@ -49,7 +85,11 @@ void	*philo_lonely(void *data)
 			v->done[p.x - 1] = true;
 			return (philo_exit(&p));
 		}
-		ft_usleep(300, &v->end);
+		else
+		{
+			if (lonely_meal(&p, v) == ERROR)
+				return (THREAD_ERROR);
+		}
 	}
 }
 
@@ -71,6 +111,8 @@ void	*philo_odd(void *data)
 		else
 			if (go_eat_odd(&p, v) == ERROR)
 				return (THREAD_ERROR);
+		if (v->n % 2 == ODD && v->end == false)
+			everyone_eats(&p, v);
 	}
 }
 
@@ -101,13 +143,13 @@ static int	wait_turn(t_philo *p, t_data *v)
 		return (SUCCESS);
 	else if (p->x % 2 == EVEN)
 	{
-		if (ft_usleep(v->eat, &v->end) == ERROR)
+		if (ft_usleep(v->eat * 0.8, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
 	else
 	{
-		if (ft_usleep(v->eat * 2, &v->end) == ERROR)
+		if (ft_usleep(v->eat * 1.6, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail", NULL));
 		return (SUCCESS);
 	}
@@ -130,7 +172,7 @@ static int	philo_init(t_philo *p, t_data *v)
 		p->fork_r = &v->f[p->x];
 		p->lock_r = &v->flock[p->x];
 	}
-	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
+	if (atomic_time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
 	if (wait_turn(p, v) == ERROR)
 		return (ft_error("wait_turn() fail", NULL));

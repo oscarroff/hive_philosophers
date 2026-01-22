@@ -83,22 +83,22 @@ typedef struct s_philo
 // m: mutex lock
 typedef struct s_data
 {
-	uint32_t		n;
-	uint32_t		die;
-	uint32_t		eat;
-	uint32_t		sleep;
-	uint32_t		fed;
-	uint32_t		start;
-	atomic_uint		i;
-	atomic_bool		*f;
-	pthread_mutex_t	*flock;
-	uint32_t		*ate;
-	atomic_bool		*eating;
-	atomic_bool		*dead;
-	atomic_bool		*done;
-	atomic_bool		end;
-	pthread_t		*t;
-	pthread_mutex_t	m;
+	uint32_t					n;
+	uint32_t					die;
+	uint32_t					eat;
+	uint32_t					sleep;
+	uint32_t					fed;
+	uint32_t					start;
+	atomic_uint					i;
+	atomic_bool					*f;
+	pthread_mutex_t				*flock;
+	atomic_uint_fast32_t		*ate;
+	atomic_bool					*eating;
+	atomic_bool					*dead;
+	atomic_bool					*done;
+	atomic_bool					end;
+	pthread_t					*t;
+	pthread_mutex_t				m;
 }	t_data;
 
 // philo
@@ -127,6 +127,7 @@ int		go_eat_even(t_philo *p, t_data *v);
 // Time
 int		time_init(uint32_t *time);
 int		time_fetch(uint32_t *time, uint32_t start);
+int		atomic_time_fetch(atomic_uint_fast32_t *time, uint32_t start);
 int		ft_usleep(uint32_t time, atomic_bool *end);
 
 // Utilities

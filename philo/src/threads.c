@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <stdatomic.h>
 
 int	threads_and_forks_init(t_data *v)
 {
@@ -19,7 +20,7 @@ int	threads_and_forks_init(t_data *v)
 	v->t = malloc(sizeof(pthread_t) * (v->n + 1));
 	v->f = malloc(sizeof(atomic_bool) * v->n);
 	v->flock = malloc(sizeof(pthread_mutex_t) * v->n);
-	v->ate = malloc(sizeof(uint32_t) * v->n);
+	v->ate = malloc(sizeof(atomic_uint_fast32_t) * v->n);
 	v->eating = malloc(sizeof(atomic_bool) * v->n);
 	v->dead = malloc(sizeof(atomic_bool) * v->n);
 	v->done = malloc(sizeof(atomic_bool) * v->n);
@@ -30,6 +31,7 @@ int	threads_and_forks_init(t_data *v)
 	{
 		memset(&v->t[i], 0, sizeof(pthread_t));
 		v->f[i] = false;
+		memset(&v->flock[i], 0, sizeof(pthread_mutex_t));
 		if (pthread_mutex_init(&v->flock[i], NULL))
 			return (ft_error("pthread_mutex_init() fail", NULL));
 		v->ate[i] = 0;

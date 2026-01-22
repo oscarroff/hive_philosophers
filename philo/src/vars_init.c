@@ -18,7 +18,7 @@ static void	vars_init(t_data *v);
 bool	parse_args(t_data *v, char **argv)
 {
 	vars_init(v);
-	if (!ft_atoui(&v->n, argv[1])
+	if (!ft_atoui(&v->n, argv[1]) || v->n == 0
 		|| !ft_atoui(&v->die, argv[2])
 		|| !ft_atoui(&v->eat, argv[3])
 		|| !ft_atoui(&v->sleep, argv[4]))
@@ -29,7 +29,7 @@ bool	parse_args(t_data *v, char **argv)
 	}
 	if (argv[5])
 	{
-		if (!ft_atoui(&v->fed, argv[5]))
+		if (!ft_atoui(&v->fed, argv[5]) || v->fed == 0)
 		{
 			printf("%s\n", MSG_VALID);
 			printf("%s", MSG_PROMPT);
