@@ -66,10 +66,12 @@ static int	what_you_doing(char *s, t_philo *p, t_data *v)
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
 	if (s[1] == EATING)
-		v->eating[p->x -1] = true;
-	if (s[1] == SLEEPING)
 	{
 		v->ate[p->x - 1] = time;
+		v->eating[p->x -1] = true;
+	}
+	if (s[1] == SLEEPING)
+	{
 		v->eating[p->x -1] = false;
 		p->meals++;
 	}
@@ -87,7 +89,7 @@ static int	take_cutlery_odd(t_philo *p, t_data *v)
 	uint32_t	time;
 
 	time = 0;
-	if (pthread_mutex_lock(&p->lock_r))
+	if (pthread_mutex_lock(p->lock_r))
 		return (ft_error("pthread_mutex_lock() fail", NULL));
 	*p->fork_r = true;
 	if (time_fetch(&time, v->start) == ERROR)
@@ -98,7 +100,7 @@ static int	take_cutlery_odd(t_philo *p, t_data *v)
 		printf("%u %u has taken a fork\n", time, p->x);
 	if (pthread_mutex_unlock(&v->m))
 		return (ft_error("pthread_mutex_unlock() fail", NULL));
-	if (pthread_mutex_lock(&p->lock_l))
+	if (pthread_mutex_lock(p->lock_l))
 		return (ft_error("pthread_mutex_lock() fail", NULL));
 	*p->fork_l = true;
 	if (time_fetch(&time, v->start) == ERROR)
@@ -117,7 +119,7 @@ static int	take_cutlery_even(t_philo *p, t_data *v)
 	uint32_t	time;
 
 	time = 0;
-	if (pthread_mutex_lock(&p->lock_l))
+	if (pthread_mutex_lock(p->lock_l))
 		return (ft_error("pthread_mutex_lock() fail", NULL));
 	*p->fork_l = true;
 	if (time_fetch(&time, v->start) == ERROR)
@@ -128,7 +130,7 @@ static int	take_cutlery_even(t_philo *p, t_data *v)
 		printf("%u %u has taken a fork\n", time, p->x);
 	if (pthread_mutex_unlock(&v->m))
 		return (ft_error("pthread_mutex_unlock() fail", NULL));
-	if (pthread_mutex_lock(&p->lock_r))
+	if (pthread_mutex_lock(p->lock_r))
 		return (ft_error("pthread_mutex_lock() fail", NULL));
 	*p->fork_r = true;
 	if (time_fetch(&time, v->start) == ERROR)
@@ -147,7 +149,7 @@ static int	return_cutlery(t_philo *p, t_data *v)
 	(void)v;
 	*p->fork_l = false;
 	*p->fork_r = false;
-	if (pthread_mutex_unlock(&p->lock_l) || pthread_mutex_unlock(&p->lock_r))
+	if (pthread_mutex_unlock(p->lock_l) || pthread_mutex_unlock(p->lock_r))
 		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	return (SUCCESS);
 }

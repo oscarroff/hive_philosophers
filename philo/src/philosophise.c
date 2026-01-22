@@ -18,8 +18,7 @@ static void	*philo_exit(t_philo *p);
 
 static void	*philo_exit(t_philo *p)
 {
-	pthread_mutex_destroy(&p->lock_l);
-	pthread_mutex_destroy(&p->lock_r);
+	(void)p;
 	return (THREAD_SUCCESS);
 }
 
@@ -29,8 +28,7 @@ static int	philo_lonely_init(t_philo *p, t_data *v)
 		return (ft_error("philo_init() fail", NULL));
 	p->meals = 0;
 	p->fork_l = &v->f[0];
-	if (pthread_mutex_init(&p->lock_l, NULL))
-		return (ft_error("pthread_mutex_init() fail", NULL));
+	p->lock_l = &v->flock[0];
 	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
 	return (SUCCESS);
@@ -121,16 +119,16 @@ static int	philo_init(t_philo *p, t_data *v)
 		return (ft_error("philo_init() fail", NULL));
 	p->meals = 0;
 	p->fork_l = &v->f[p->x - 1];
+	p->lock_l = &v->flock[p->x - 1];
 	if (p->x == v->n)
-		p->fork_r = &v->f[0];
-	else
-		p->fork_r = &v->f[p->x];
-	if (pthread_mutex_init(&p->lock_l, NULL))
-		return (ft_error("pthread_mutex_init() fail", NULL));
-	if (pthread_mutex_init(&p->lock_r, NULL))
 	{
-		pthread_mutex_destroy(&p->lock_l);
-		return (ft_error("pthread_mutex_init() fail", NULL));
+		p->fork_r = &v->f[0];
+		p->lock_r = &v->flock[0];
+	}
+	else
+	{
+		p->fork_r = &v->f[p->x];
+		p->lock_r = &v->flock[p->x];
 	}
 	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));

@@ -66,8 +66,8 @@ typedef struct s_philo
 	uint32_t		meals;
 	atomic_bool		*fork_l;
 	atomic_bool		*fork_r;
-	pthread_mutex_t	lock_l;
-	pthread_mutex_t	lock_r;
+	pthread_mutex_t	*lock_l;
+	pthread_mutex_t	*lock_r;
 }	t_philo;
 
 // Struct for shared program variables
@@ -91,6 +91,7 @@ typedef struct s_data
 	uint32_t		start;
 	atomic_uint		i;
 	atomic_bool		*f;
+	pthread_mutex_t	*flock;
 	uint32_t		*ate;
 	atomic_bool		*eating;
 	atomic_bool		*dead;

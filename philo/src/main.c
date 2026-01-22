@@ -66,6 +66,12 @@ static bool	philo_main(char **argv)
 
 void	philo_main_exit(t_data *v)
 {
+	uint32_t	i;
+
+	i = 0;
+	while (i < v->n)
+		pthread_mutex_destroy(&v->flock[i++]);
+	pthread_mutex_destroy(&v->m);
 	if (v->t)
 		free(v->t);
 	if (v->f)
@@ -78,5 +84,4 @@ void	philo_main_exit(t_data *v)
 		free(v->dead);
 	if (v->done)
 		free(v->done);
-	pthread_mutex_destroy(&v->m);
 }

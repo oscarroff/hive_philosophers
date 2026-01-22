@@ -37,7 +37,7 @@ static int	check_status(t_data *v)
 			done = true;
 		if (time_fetch(&time, v->start) == ERROR)
 			return (ft_error("time_fetch() fail", NULL));
-		if (v->done[i] == false && v->eating == false
+		if (v->done[i] == false
 			&& time >= v->ate[i] + v->die)
 			return (monitor_exit(v, time, i));
 		usleep(50);
