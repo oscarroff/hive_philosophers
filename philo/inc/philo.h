@@ -114,6 +114,7 @@ void	*monitor(void *data);
 // Philosophise
 void	*philo_odd(void *data);
 void	*philo_even(void *data);
+void	*philo_lonely(void *data);
 
 // Do Things
 int		go_eat_odd(t_philo *p, t_data *v);

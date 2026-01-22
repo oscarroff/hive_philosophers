@@ -44,6 +44,12 @@ int	threads_run(t_data *v)
 		return (ft_error("time_init() fail", NULL));
 	if (pthread_create(&v->t[0], NULL, monitor, v))
 		return (ft_error("pthread_create() fail", v));
+	if (v->n == 1)
+	{
+		if (pthread_create(&v->t[1], NULL, philo_lonely, v))
+			return (ft_error("pthread_create() fail", v));
+		return (true);
+	}
 	i = 1;
 	while (i < v->n + 1)
 	{

@@ -23,11 +23,42 @@ static void	*philo_exit(t_philo *p)
 	return (THREAD_SUCCESS);
 }
 
+static int	philo_lonely_init(t_philo *p, t_data *v)
+{
+	if (!num_fetch(p, v))
+		return (ft_error("philo_init() fail", NULL));
+	p->meals = 0;
+	p->fork_l = &v->f[0];
+	if (pthread_mutex_init(&p->lock_l, NULL))
+		return (ft_error("pthread_mutex_init() fail", NULL));
+	if (time_fetch(&v->ate[p->x - 1], v->start) == ERROR)
+		return (ft_error("time_fetch() fail", NULL));
+	return (SUCCESS);
+}
+
+void	*philo_lonely(void *data)
+{
+	t_data			*v;
+	t_philo			p;
+
+	v = data;
+	if (!philo_lonely_init(&p, v))
+		return (THREAD_ERROR);
+	while (1)
+	{
+		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
+		{
+			v->done[p.x - 1] = true;
+			return (philo_exit(&p));
+		}
+		ft_usleep(300, &v->end);
+	}
+}
+
 void	*philo_odd(void *data)
 {
 	t_data			*v;
 	t_philo			p;
-	int				flag;
 
 	v = data;
 	if (!philo_init(&p, v))
@@ -40,11 +71,8 @@ void	*philo_odd(void *data)
 			return (philo_exit(&p));
 		}
 		else
-		{
-			flag = go_eat_odd(&p, v);
-			if (flag == FAIL)
+			if (go_eat_odd(&p, v) == ERROR)
 				return (THREAD_ERROR);
-		}
 	}
 }
 
@@ -52,7 +80,6 @@ void	*philo_even(void *data)
 {
 	t_data			*v;
 	t_philo			p;
-	int				flag;
 
 	v = data;
 	if (!philo_init(&p, v))
@@ -65,11 +92,8 @@ void	*philo_even(void *data)
 			return (philo_exit(&p));
 		}
 		else
-		{
-			flag = go_eat_even(&p, v);
-			if (flag == FAIL)
+			if (go_eat_even(&p, v) == ERROR)
 				return (THREAD_ERROR);
-		}
 	}
 }
 
