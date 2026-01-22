@@ -122,13 +122,23 @@ static int	take_cutlery_even(t_philo *p, t_data *v)
 	*p->fork_l = true;
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
-	printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	if (v->end == false)
+		printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	if (pthread_mutex_lock(&p->lock_r))
 		return (ft_error("pthread_mutex_lock() fail", NULL));
 	*p->fork_r = true;
 	if (time_fetch(&time, v->start) == ERROR)
 		return (ft_error("time_fetch() fail", NULL));
-	printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	if (v->end == false)
+		printf("%u %u has taken a fork\n", time, p->x);
+	if (pthread_mutex_unlock(&v->m))
+		return (ft_error("pthread_mutex_unlock() fail", NULL));
 	return (SUCCESS);
 }
 
