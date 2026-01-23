@@ -54,13 +54,13 @@ int	ft_usleep(uint32_t time, atomic_bool *end)
 	current = 0;
 	if (time_init(&start) == ERROR)
 		return (ft_error("time_init() fail", NULL));
-
 	while (1)
 	{
 		if (time_init(&current) == ERROR)
 			return (ft_error("time_init() fail", NULL));
 		if (current >= start + time || *end == true)
 			return (SUCCESS);
-		usleep(300);
+		if (usleep(300) == ERROR)
+			return (ft_error("usleep() fail", NULL));
 	}
 }

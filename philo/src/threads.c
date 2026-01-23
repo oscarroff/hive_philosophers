@@ -40,7 +40,7 @@ int	threads_and_forks_init(t_data *v)
 		v->done[i] = false;
 		i++;
 	}
-	return (true);
+	return (SUCCESS);
 }
 
 int	threads_run(t_data *v)
@@ -55,7 +55,7 @@ int	threads_run(t_data *v)
 	{
 		if (pthread_create(&v->t[1], NULL, philo_lonely, v))
 			return (ft_error("pthread_create() fail", v));
-		return (true);
+		return (SUCCESS);
 	}
 	i = 1;
 	while (i < v->n + 1)
@@ -68,7 +68,7 @@ int	threads_run(t_data *v)
 				return (ft_error("pthread_create() fail", v));
 		i++;
 	}
-	return (true);
+	return (SUCCESS);
 }
 
 int	threads_join(t_data *v)
@@ -98,5 +98,5 @@ int	threads_join(t_data *v)
 		printf("%u error: %ld\n", 0, exit_code);
 		return (ft_error("thread fail", v));
 	}
-	return (true);
+	return (SUCCESS);
 }

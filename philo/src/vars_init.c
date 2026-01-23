@@ -36,6 +36,8 @@ bool	parse_args(t_data *v, char **argv)
 			return (false);
 		}
 	}
+	if (v->sleep <= v->eat && v->n % 2 == ODD)
+		v->think = v->eat - v->sleep + 1;
 	if (pthread_mutex_init(&v->m, NULL))
 		ft_error("pthread_mutex_init() fail", NULL);
 	return (true);
@@ -47,6 +49,7 @@ static void	vars_init(t_data *v)
 	v->die = 0;
 	v->eat = 0;
 	v->sleep = 0;
+	v->think = 0;
 	v->fed = 0;
 	v->start = 0;
 	v->i = 1;

@@ -40,7 +40,8 @@ static int	check_status(t_data *v)
 		if (v->done[i] == false
 			&& time >= v->ate[i] + v->die)
 			return (monitor_exit(v, time, i));
-		usleep(50);
+		if (usleep(50) == ERROR)
+			return (ft_error("usleep() fail", NULL));
 		i++;
 	}
 	if (done == true)

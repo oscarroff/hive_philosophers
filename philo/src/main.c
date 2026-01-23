@@ -18,10 +18,13 @@ static bool	philo_main(char **argv);
 
 int	main(int argc, char **argv)
 {
-	if (argc < 5 || !valid_input(argv))
+	if (argc < 5)
 	{
-		if (argc < 5)
-			printf("%s\n", MSG_ARGS);
+		printf("%s\n", MSG_ARGS);
+		return (EXIT_SUCCESS);
+	}
+	if (!valid_input(argv))
+	{
 		printf("%s", MSG_PROMPT);
 		return (EXIT_SUCCESS);
 	}

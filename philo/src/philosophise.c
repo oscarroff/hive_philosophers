@@ -14,13 +14,6 @@
 
 static int	philo_init(t_philo *p, t_data *v);
 static int	num_fetch(t_philo *p, t_data *v);
-static void	*philo_exit(t_philo *p);
-
-static void	*philo_exit(t_philo *p)
-{
-	(void)p;
-	return (THREAD_SUCCESS);
-}
 
 static int	philo_lonely_init(t_philo *p, t_data *v)
 {
@@ -34,17 +27,11 @@ static int	philo_lonely_init(t_philo *p, t_data *v)
 	return (SUCCESS);
 }
 
-static void	everyone_eats(t_philo *p, t_data *v)
+int	go_think(t_data *v)
 {
-	uint32_t	neighbour;
-
-	if (p->x < v->n)
-		neighbour = p->x;
-	else
-		neighbour = 0;
-	while (v->eating[neighbour] == true)
-		ft_usleep(200, &v->end);
-	return ;
+	if (ft_usleep(v->think, &v->end) == ERROR)
+		return (ft_error("ft_usleep() fail", NULL));
+	return (SUCCESS);
 }
 
 static int	lonely_meal(t_philo *p, t_data *v)
@@ -83,7 +70,7 @@ void	*philo_lonely(void *data)
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 		{
 			v->done[p.x - 1] = true;
-			return (philo_exit(&p));
+			return (THREAD_SUCCESS);
 		}
 		else
 		{
@@ -95,8 +82,8 @@ void	*philo_lonely(void *data)
 
 void	*philo_odd(void *data)
 {
-	t_data			*v;
-	t_philo			p;
+	t_data	*v;
+	t_philo	p;
 
 	v = data;
 	if (!philo_init(&p, v))
@@ -106,13 +93,16 @@ void	*philo_odd(void *data)
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 		{
 			v->done[p.x - 1] = true;
-			return (philo_exit(&p));
+			return (THREAD_SUCCESS);
 		}
-		else
-			if (go_eat_odd(&p, v) == ERROR)
+		if (go_eat_odd(&p, v) == ERROR)
+			return (THREAD_ERROR);
+		if (v->end == false)
+			if (go_sleep(&p, v) == ERROR)
 				return (THREAD_ERROR);
-		if (v->n % 2 == ODD && v->end == false)
-			everyone_eats(&p, v);
+		if (v->think > 0 && v->end == false)
+			if (go_think(v) == ERROR)
+				return (THREAD_ERROR);
 	}
 }
 
@@ -129,10 +119,15 @@ void	*philo_even(void *data)
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 		{
 			v->done[p.x - 1] = true;
-			return (philo_exit(&p));
+			return (THREAD_SUCCESS);
 		}
-		else
-			if (go_eat_even(&p, v) == ERROR)
+		if (go_eat_even(&p, v) == ERROR)
+			return (THREAD_ERROR);
+		if (v->end == false)
+			if (go_sleep(&p, v) == ERROR)
+				return (THREAD_ERROR);
+		if (v->think > 0 && v->end == false)
+			if (go_think(v) == ERROR)
 				return (THREAD_ERROR);
 	}
 }
