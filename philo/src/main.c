@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 17:58:39 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/24 11:54:51 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 12:20:58 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	main(int argc, char **argv)
 
 	if (argc < 5)
 	{
-		printf("%s\n", MSG_ARGS);
+		printf("%s", MSG_ARGS);
 		return (EXIT_SUCCESS);
 	}
 	if (valid_input(argv) == FAIL)
