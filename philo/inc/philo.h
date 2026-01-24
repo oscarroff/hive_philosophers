@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 18:07:57 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/23 14:46:10 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 10:40:19 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PHILO_H
 
 # include <pthread.h>
-# include <signal.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -117,21 +116,20 @@ int		threads_join(t_data *v);
 void	*monitor(void *data);
 
 // Philosophise
+int		philo_init(t_philo *p, t_data *v);
 void	*philo_odd(void *data);
 void	*philo_even(void *data);
 void	*philo_lonely(void *data);
-
-// Do Things
-int		go_eat_odd(t_philo *p, t_data *v);
-int		go_eat_even(t_philo *p, t_data *v);
-int		go_sleep(t_philo *p, t_data *v);
-int		go_think(t_data *v);
-int		what_you_doing(char *s, t_philo *p, t_data *v);
 
 // Cutlery
 int		take_fork(atomic_bool *fork, pthread_mutex_t *lock, \
 t_philo *p, t_data *v);
 int		return_cutlery(t_philo *p, t_data *v);
+
+// Fed Philos Do Things
+int		go_sleep(t_philo *p, t_data *v);
+int		go_think(t_data *v);
+int		what_you_doing(char *s, t_philo *p, t_data *v);
 
 // Time
 int		time_init(uint32_t *time);
@@ -147,6 +145,5 @@ bool	ft_naun(const char *nptr);
 bool	ft_atoui(unsigned int *nbr, const char *nptr);
 size_t	ft_strlen(const char *s);
 int		ft_error(char *s, t_data *data);
-int		ft_putstr_fd_endl(int fd, char *str);
 
 #endif

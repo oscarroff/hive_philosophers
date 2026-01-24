@@ -6,20 +6,28 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/21 15:47:46 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/21 18:22:19 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 10:38:41 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	monitor_exit(t_data *v, uint32_t time, uint32_t i)
+static int	check_status(t_data *v);
+static int	monitor_exit(t_data *v, uint32_t time, uint32_t i);
+
+void	*monitor(void *data)
 {
-	if (pthread_mutex_lock(&v->m))
-		return (ft_error("pthread_mutex_lock() fail", NULL));
-	v->end = true;
-	printf("%u %u died\n", time, i + 1);
-	pthread_mutex_unlock(&v->m);
-	return (FAIL);
+	t_data	*v;
+	int		flag;
+
+	v = data;
+	flag = SUCCESS;
+	while (flag == SUCCESS)
+		flag = check_status(v);
+	if (flag == ERROR)
+		return (THREAD_ERROR);
+	else
+		return (THREAD_SUCCESS);
 }
 
 static int	check_status(t_data *v)
@@ -49,17 +57,12 @@ static int	check_status(t_data *v)
 	return (SUCCESS);
 }
 
-void	*monitor(void *data)
+static int	monitor_exit(t_data *v, uint32_t time, uint32_t i)
 {
-	t_data	*v;
-	int		flag;
-
-	v = data;
-	flag = SUCCESS;
-	while (flag == SUCCESS)
-		flag = check_status(v);
-	if (flag == ERROR)
-		return (THREAD_ERROR);
-	else
-		return (THREAD_SUCCESS);
+	if (pthread_mutex_lock(&v->m))
+		return (ft_error("pthread_mutex_lock() fail", NULL));
+	v->end = true;
+	printf("%u %u died\n", time, i + 1);
+	pthread_mutex_unlock(&v->m);
+	return (FAIL);
 }

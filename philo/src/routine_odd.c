@@ -1,20 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   go_eat_odd.c                                       :+:      :+:    :+:   */
+/*   routine_odd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 14:41:59 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/23 14:46:22 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 10:31:44 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+static int	go_eat_odd(t_philo *p, t_data *v);
 static int	take_cutlery_odd(t_philo *p, t_data *v);
 
-int	go_eat_odd(t_philo *p, t_data *v)
+void	*philo_odd(void *data)
+{
+	t_data	*v;
+	t_philo	p;
+
+	v = data;
+	if (!philo_init(&p, v))
+		return (THREAD_ERROR);
+	while (1)
+	{
+		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
+		{
+			v->done[p.x - 1] = true;
+			return (THREAD_SUCCESS);
+		}
+		if (go_eat_odd(&p, v) == ERROR)
+			return (THREAD_ERROR);
+		if (v->end == false)
+			if (go_sleep(&p, v) == ERROR)
+				return (THREAD_ERROR);
+		if (v->think > 0 && v->end == false)
+			if (go_think(v) == ERROR)
+				return (THREAD_ERROR);
+	}
+}
+
+static int	go_eat_odd(t_philo *p, t_data *v)
 {
 	if (take_cutlery_odd(p, v) == ERROR)
 		return (ft_error("take_cutlery_odd() fail", NULL));

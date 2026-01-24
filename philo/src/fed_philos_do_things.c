@@ -12,7 +12,6 @@
 
 #include "philo.h"
 
-
 int	go_sleep(t_philo *p, t_data *v)
 {
 	if (what_you_doing("sleeping", p, v) == ERROR)
@@ -23,6 +22,13 @@ int	go_sleep(t_philo *p, t_data *v)
 		return (SUCCESS);
 	if (what_you_doing("thinking", p, v) == ERROR)
 		return (ft_error("what_you_doing() fail", NULL));
+	return (SUCCESS);
+}
+
+int	go_think(t_data *v)
+{
+	if (ft_usleep(v->think, &v->end) == ERROR)
+		return (ft_error("ft_usleep() fail", NULL));
 	return (SUCCESS);
 }
 
