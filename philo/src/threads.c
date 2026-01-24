@@ -13,6 +13,7 @@
 #include "philo.h"
 
 static int	multi_philo(t_data *v);
+static int	close_thread(pthread_t *t, uint32_t i);
 
 int	threads_run(t_data *v)
 {
@@ -62,22 +63,6 @@ static int	multi_philo(t_data *v)
 	return (SUCCESS);
 }
 
-static int	close_thread(pthread_t *t, uint32_t i, t_data *v)
-{
-	void		*return_val;
-	long		exit_code;
-
-	if (pthread_join(*t, &return_val))
-		return (ft_error("pthread_join() fail"));
-	exit_code = (long)return_val;
-	if (exit_code != 0)
-	{
-		printf("%u error: %ld\n", i, exit_code);
-		return (ft_error("thread ));
-	}
-	return (SUCCESS);
-}
-
 int	threads_join(t_data *v)
 {
 	uint32_t	n;
@@ -92,17 +77,33 @@ int	threads_join(t_data *v)
 	i = 1;
 	while (i < n + 1)
 	{
-		if (close_thread(&v->t[i], i, v) == ERROR)
+		if (close_thread(&v->t[i], i) == ERROR)
 		{
 			flag = ERROR;
 			ft_error("close_thread() fail");
 		}
 		i++;
 	}
-	if (close_thread(&v->t[0], 0, v) == ERROR)
+	if (close_thread(&v->t[0], 0) == ERROR)
 	{
 		flag = ERROR;
 		return (ft_error("close_thread() fail"));
 	}
 	return (flag);
+}
+
+static int	close_thread(pthread_t *t, uint32_t i)
+{
+	void		*return_val;
+	long		exit_code;
+
+	if (pthread_join(*t, &return_val))
+		return (ft_error("pthread_join() fail"));
+	exit_code = (long)return_val;
+	if (exit_code != 0)
+	{
+		printf("%u error: %ld\n", i, exit_code);
+		return (ft_error("thread fail"));
+	}
+	return (SUCCESS);
 }
