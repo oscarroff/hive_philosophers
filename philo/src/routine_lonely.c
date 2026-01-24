@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 10:25:30 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/24 10:29:39 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 12:07:49 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,18 @@ void	*philo_lonely(void *data)
 
 	v = data;
 	if (!philo_lonely_init(&p, v))
-		return (THREAD_ERROR);
+		return ((void *)-1);
 	while (1)
 	{
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 		{
 			v->done[p.x - 1] = true;
-			return (THREAD_SUCCESS);
+			return (NULL);
 		}
 		else
 		{
 			if (lonely_meal(&p, v) == ERROR)
-				return (THREAD_ERROR);
+				return ((void *)-1);
 		}
 	}
 }

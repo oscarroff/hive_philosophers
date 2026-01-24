@@ -39,10 +39,6 @@
 # define ODD 1
 // Even result of % 2 for even numbered philosophers
 # define EVEN 0
-// Thread successful execution
-# define THREAD_SUCCESS NULL
-// Thread unsuccessful execution
-# define THREAD_ERROR ((void *)-1)
 // All philosopher threads closed
 # define DONE 0
 

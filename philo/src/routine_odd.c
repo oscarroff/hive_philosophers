@@ -6,7 +6,7 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/23 14:41:59 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/24 10:31:44 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 12:07:37 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,22 @@ void	*philo_odd(void *data)
 
 	v = data;
 	if (!philo_init(&p, v))
-		return (THREAD_ERROR);
+		return ((void *)-1);
 	while (1)
 	{
 		if (v->end == true || (p.meals >= v->fed && v->fed > 0))
 		{
 			v->done[p.x - 1] = true;
-			return (THREAD_SUCCESS);
+			return (NULL);
 		}
 		if (go_eat_odd(&p, v) == ERROR)
-			return (THREAD_ERROR);
+			return ((void *)-1);
 		if (v->end == false)
 			if (go_sleep(&p, v) == ERROR)
-				return (THREAD_ERROR);
+				return ((void *)-1);
 		if (v->think > 0 && v->end == false)
 			if (go_think(v) == ERROR)
-				return (THREAD_ERROR);
+				return ((void *)-1);
 	}
 }
 
