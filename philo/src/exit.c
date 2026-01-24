@@ -19,13 +19,13 @@ int	philo_init_exit(t_data *v)
 	uint32_t	i;
 
 	if (pthread_mutex_destroy(&v->m))
-		ft_error("pthread_mutex_init() fail", NULL);
+		ft_error("pthread_mutex_destroy() fail");
 	i = 0;
 	if (v->err_i > 0)
 	{
 		while (i < v->err_i)
 			if (pthread_mutex_destroy(&v->flock[i++]))
-				ft_error("pthread_mutex_init() fail", NULL);
+				ft_error("pthread_mutex_destroy() fail");
 	}
 	free_it_all(v);
 	return (ERROR);
@@ -36,15 +36,15 @@ int	philo_threads_exit(t_data *v)
 	uint32_t	i;
 
 	if (pthread_mutex_destroy(&v->m))
-		ft_error("pthread_mutex_init() fail", NULL);
+		ft_error("pthread_mutex_destroy() fail");
 	i = 0;
 	while (i < v->n)
 		if (pthread_mutex_destroy(&v->flock[i++]))
-			ft_error("pthread_mutex_init() fail", NULL);
+			ft_error("pthread_mutex_destroy() fail");
 	i = 0;
 	if (v->err_i > 0)
 		if (threads_join(v) == ERROR)
-			ft_error("threads_join() fail", v);
+			ft_error("threads_join() fail");
 	free_it_all(v);
 	return (ERROR);
 }
@@ -61,13 +61,13 @@ int	philo_main_exit(t_data *v)
 		if (pthread_mutex_destroy(&v->flock[i++]))
 		{
 			flag = ERROR;
-			ft_error("pthread_mutex_init() fail", NULL);
+			ft_error("pthread_mutex_init() fail");
 		}
 	}
 	if (pthread_mutex_destroy(&v->m))
 	{
 		flag = ERROR;
-		ft_error("pthread_mutex_init() fail", NULL);
+		ft_error("pthread_mutex_init() fail");
 	}
 	free_it_all(v);
 	return (flag);

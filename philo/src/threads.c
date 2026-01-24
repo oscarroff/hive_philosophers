@@ -17,20 +17,20 @@ static int	multi_philo(t_data *v);
 int	threads_run(t_data *v)
 {
 	if (time_init(&v->start) == ERROR)
-		return (ft_error("time_init() fail", NULL));
+		return (ft_error("time_init() fail"));
 	if (pthread_create(&v->t[0], NULL, monitor, v))
-		return (ft_error("pthread_create() fail", v));
+		return (ft_error("pthread_create() fail"));
 	if (v->n == 1)
 	{
 		if (pthread_create(&v->t[1], NULL, philo_lonely, v))
 		{
 			v->err_i = 1;
-			return (ft_error("pthread_create() fail", v));
+			return (ft_error("pthread_create() fail"));
 		}
 		return (SUCCESS);
 	}
 	if (multi_philo(v) == ERROR)
-		return (ft_error("multi_philo() fail", NULL));
+		return (ft_error("multi_philo() fail"));
 	return (SUCCESS);
 }
 
@@ -46,7 +46,7 @@ static int	multi_philo(t_data *v)
 			if (pthread_create(&v->t[i], NULL, philo_odd, v))
 			{
 				v->err_i = i;
-				return (ft_error("pthread_create() fail", v));
+				return (ft_error("pthread_create() fail"));
 			}
 		}
 		if (i % 2 == EVEN)
@@ -54,7 +54,7 @@ static int	multi_philo(t_data *v)
 			if (pthread_create(&v->t[i], NULL, philo_even, v))
 			{
 				v->err_i = i;
-				return (ft_error("pthread_create() fail", v));
+				return (ft_error("pthread_create() fail"));
 			}
 		}
 		i++;
@@ -68,12 +68,12 @@ static int	close_thread(pthread_t *t, uint32_t i, t_data *v)
 	long		exit_code;
 
 	if (pthread_join(*t, &return_val))
-		return (ft_error("pthread_join() fail", v));
+		return (ft_error("pthread_join() fail"));
 	exit_code = (long)return_val;
 	if (exit_code != 0)
 	{
 		printf("%u error: %ld\n", i, exit_code);
-		return (ft_error("thread fail", v));
+		return (ft_error("thread ));
 	}
 	return (SUCCESS);
 }
@@ -95,14 +95,14 @@ int	threads_join(t_data *v)
 		if (close_thread(&v->t[i], i, v) == ERROR)
 		{
 			flag = ERROR;
-			ft_error("close_thread() fail", v);
+			ft_error("close_thread() fail");
 		}
 		i++;
 	}
 	if (close_thread(&v->t[0], 0, v) == ERROR)
 	{
 		flag = ERROR;
-		return (ft_error("close_thread() fail", v));
+		return (ft_error("close_thread() fail"));
 	}
 	return (flag);
 }

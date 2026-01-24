@@ -147,6 +147,6 @@ int		ft_isspace(int c);
 bool	ft_naun(const char *nptr);
 bool	ft_atoui(unsigned int *nbr, const char *nptr);
 size_t	ft_strlen(const char *s);
-int		ft_error(char *s, t_data *data);
+int		ft_error(char *s);
 
 #endif

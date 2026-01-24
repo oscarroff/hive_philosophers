@@ -44,12 +44,12 @@ static int	check_status(t_data *v)
 		if (v->done[i] == true)
 			done = true;
 		if (time_fetch(&time, v->start) == ERROR)
-			return (ft_error("time_fetch() fail", NULL));
+			return (ft_error("time_fetch() fail"));
 		if (v->done[i] == false
 			&& time >= v->ate[i] + v->die)
 			return (monitor_exit(v, time, i));
 		if (usleep(50) == ERROR)
-			return (ft_error("usleep() fail", NULL));
+			return (ft_error("usleep() fail"));
 		i++;
 	}
 	if (done == true)
@@ -60,7 +60,7 @@ static int	check_status(t_data *v)
 static int	monitor_exit(t_data *v, uint32_t time, uint32_t i)
 {
 	if (pthread_mutex_lock(&v->m))
-		return (ft_error("pthread_mutex_lock() fail", NULL));
+		return (ft_error("pthread_mutex_lock() fail"));
 	v->end = true;
 	printf("%u %u died\n", time, i + 1);
 	pthread_mutex_unlock(&v->m);

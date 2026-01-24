@@ -21,12 +21,10 @@ int	ft_putstr_fd_endl(int fd, char *str)
 	return (SUCCESS);
 }
 
-int	ft_error(char *s, t_data *data)
+int	ft_error(char *s)
 {
 	if (*s)
 		if (ft_putstr_fd_endl(2, s) == ERROR)
 			return (ERROR);
-	if (data)
-		philo_main_exit(data);
 	return (ERROR);
 }

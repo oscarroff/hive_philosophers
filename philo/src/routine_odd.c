@@ -44,21 +44,21 @@ void	*philo_odd(void *data)
 static int	go_eat_odd(t_philo *p, t_data *v)
 {
 	if (take_cutlery_odd(p, v) == ERROR)
-		return (ft_error("take_cutlery_odd() fail", NULL));
+		return (ft_error("take_cutlery_odd() fail"));
 	if (what_you_doing("eating", p, v) == ERROR)
-		return (ft_error("what_you_doing() fail", NULL));
+		return (ft_error("what_you_doing() fail"));
 	if (ft_usleep(v->eat, &v->end) == ERROR)
-		return (ft_error("ft_usleep() fail", NULL));
+		return (ft_error("ft_usleep() fail"));
 	if (return_cutlery(p, v) == ERROR)
-		return (ft_error("return_cutlery() fail", NULL));
+		return (ft_error("return_cutlery() fail"));
 	return (SUCCESS);
 }
 
 static int	take_cutlery_odd(t_philo *p, t_data *v)
 {
 	if (take_fork(p->fork_r, p->lock_r, p, v) == ERROR)
-		return (ft_error("take_fork() fail", NULL));
+		return (ft_error("take_fork() fail"));
 	if (take_fork(p->fork_l, p->lock_l, p, v) == ERROR)
-		return (ft_error("take_fork() fail", NULL));
+		return (ft_error("take_fork() fail"));
 	return (SUCCESS);
 }

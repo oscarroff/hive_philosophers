@@ -19,16 +19,16 @@ t_philo *p, t_data *v)
 
 	time = 0;
 	if (pthread_mutex_lock(lock))
-		return (ft_error("pthread_mutex_lock() fail", NULL));
+		return (ft_error("pthread_mutex_lock() fail"));
 	*fork = true;
 	if (time_fetch(&time, v->start) == ERROR)
-		return (ft_error("time_fetch() fail", NULL));
+		return (ft_error("time_fetch() fail"));
 	if (pthread_mutex_lock(&v->m))
-		return (ft_error("pthread_mutex_lock() fail", NULL));
+		return (ft_error("pthread_mutex_lock() fail"));
 	if (v->end == false)
 		printf("%u %u has taken a fork\n", time, p->x);
 	if (pthread_mutex_unlock(&v->m))
-		return (ft_error("pthread_mutex_unlock() fail", NULL));
+		return (ft_error("pthread_mutex_unlock() fail"));
 	return (SUCCESS);
 }
 
@@ -38,6 +38,6 @@ int	return_cutlery(t_philo *p, t_data *v)
 	*p->fork_l = false;
 	*p->fork_r = false;
 	if (pthread_mutex_unlock(p->lock_l) || pthread_mutex_unlock(p->lock_r))
-		return (ft_error("pthread_mutex_unlock() fail", NULL));
+		return (ft_error("pthread_mutex_unlock() fail"));
 	return (SUCCESS);
 }

@@ -40,7 +40,7 @@ int	parse_args(t_data *v, char **argv)
 	if (v->sleep <= v->eat && v->n % 2 == ODD)
 		v->think = v->eat - v->sleep + 1;
 	if (pthread_mutex_init(&v->m, NULL))
-		ft_error("pthread_mutex_init() fail", NULL);
+		ft_error("pthread_mutex_init() fail");
 	return (SUCCESS);
 }
 
@@ -67,7 +67,7 @@ int	init(t_data *v)
 	if (malloc_helper(v) == ERROR)
 	{
 		philo_init_exit(v);
-		return (ft_error("malloc_helper() fail", v));
+		return (ft_error("malloc_helper() fail"));
 	}
 	i = 0;
 	while (i < v->n)
@@ -78,7 +78,7 @@ int	init(t_data *v)
 		if (pthread_mutex_init(&v->flock[i], NULL))
 		{
 			v->err_i = i;
-			return (ft_error("pthread_mutex_init() fail", NULL));
+			return (ft_error("pthread_mutex_init() fail"));
 		}
 		v->ate[i] = 0;
 		v->eating[i] = false;
@@ -99,6 +99,6 @@ static int	malloc_helper(t_data *v)
 	v->dead = malloc(sizeof(atomic_bool) * v->n);
 	v->done = malloc(sizeof(atomic_bool) * v->n);
 	if (!v->t || !v->f || !v->flock || !v->ate || !v->dead || !v->done)
-		return (ft_error("malloc() fail", v));
+		return (ft_error("malloc() fail"));
 	return (SUCCESS);
 }
