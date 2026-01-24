@@ -12,9 +12,20 @@
 
 #include "philo.h"
 
+int	ft_putstr_fd_endl(int fd, char *str)
+{
+	if (*str)
+		if (write(fd, str, ft_strlen(str)) == ERROR
+			|| write(fd, "\n", 1) == ERROR)
+			return (ERROR);
+	return (SUCCESS);
+}
+
 int	ft_error(char *s, t_data *data)
 {
-	printf("Error: %s\n", s);
+	if (*s)
+		if (ft_putstr_fd_endl(2, s) == ERROR)
+			return (ERROR);
 	if (data)
 		philo_main_exit(data);
 	return (ERROR);

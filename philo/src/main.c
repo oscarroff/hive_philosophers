@@ -6,31 +6,34 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/06 17:58:39 by thblack-          #+#    #+#             */
-/*   Updated: 2025/12/14 12:25:55 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 12:20:58 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "messages.h"
 #include "philo.h"
 
-static bool	valid_input(char **argv);
-static bool	philo_main(char **argv);
+static int	valid_input(char **argv);
+static int	philo_main(char **argv);
 
 int	main(int argc, char **argv)
 {
-	if (argc < 5 || !valid_input(argv))
+	int		flag;
+
+	if (argc < 5)
 	{
-		if (argc < 5)
-			printf("%s\n", MSG_ARGS);
-		printf("%s", MSG_PROMPT);
+		printf("%s", MSG_ARGS);
 		return (EXIT_SUCCESS);
 	}
-	if (!philo_main(argv))
+	if (valid_input(argv) == FAIL)
+		return (EXIT_SUCCESS);
+	flag = philo_main(argv);
+	if (flag == ERROR)
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
 }
 
-static bool	valid_input(char **argv)
+static int	valid_input(char **argv)
 {
 	int	i;
 
@@ -43,30 +46,27 @@ static bool	valid_input(char **argv)
 			{
 				printf("%s\n", MSG_VALID);
 				printf("%s", MSG_PROMPT);
-				return (false);
+				return (FAIL);
 			}
 		}
 	}
-	return (true);
+	return (SUCCESS);
 }
 
-static bool	philo_main(char **argv)
+static int	philo_main(char **argv)
 {
-	t_data	p;
+	t_data	v;
+	int		flag;
 
-	if (!parse_args(&p, argv) || p.n == 0 || (argv[5] && p.fed == 0))
-		return (true);
-	if (!threads_and_forks_init(&p) || !threads_run(&p) || !threads_join(&p))
-		return (false);
-	philo_main_exit(&p);
-	return (true);
-}
-
-void	philo_main_exit(t_data *v)
-{
-	if (v->t)
-		free(v->t);
-	if (v->f)
-		free(v->f);
-	pthread_mutex_destroy(&v->m);
+	flag = parse_args(&v, argv);
+	if (flag != SUCCESS)
+		return (flag);
+	if (init(&v) == ERROR)
+		return (philo_init_exit(&v));
+	if (threads_run(&v) == ERROR)
+		return (philo_threads_exit(&v));
+	flag = threads_join(&v);
+	if (philo_main_exit(&v) == ERROR)
+		flag = ERROR;
+	return (flag);
 }
