@@ -6,7 +6,7 @@
 #    By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/24 14:57:58 by thblack-          #+#    #+#              #
-#    Updated: 2025/12/11 11:01:01 by thblack-         ###   ########.fr        #
+#    Updated: 2026/01/24 12:36:52 by thblack-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,122 +14,67 @@
 PROJECT		= philo
 NAME		= philo
 
-# MODE
-MODE		= $(if $(filter 1,$(DEBUG)),debug,release)
-DEBUG		?= 0
+# COMPILING
+CC			= cc
+CFLAGS		= -Wall -Wextra -Werror
 
 # PROJECT DIRECTORIES
-SRC_DIR		= src
-OBJ_DIR		= obj/$(MODE)
-INC_DIR		= inc
+SRC_D		= src
+OBJ_D		= obj
+INC_D		= inc
 
-# PROJECT SOURCES: Explicitly states
-# SRC_FILES	= philo.c
-SRC_DEV		= $(shell find src -name "*.c")
-SRC			= $(SRC_DEV)
-# SRC			= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+# SOURCE DIRECTORIES
+UTILS_D		= src/utils
 
-# PROJECT HEADER
-HEADER		= $(INC_DIR)/philo.h
+# SOURCE FILES
+UTILS_F		= ft_atoui.c ft_error.c ft_isdigit.c ft_issign.c ft_isspace.c \
+			  ft_naun.c ft_strlen.c
+MAIN_F		= cutlery.c exit.c fed_philos_do_things.c init.c main.c monitor.c \
+			  routine_even.c routine_init.c routine_lonely.c routine_odd.c \
+			  threads.c time.c
+
+# PROJECT SOURCES
+MAIN		= $(addprefix $(SRC_D)/, $(MAIN_F))
+UTILS		= $(addprefix $(UTILS_D)/, $(UTILS_F))
+SOURCES		= $(MAIN) $(UTILS)
+
+# HEADER FILES
+HEADER_F	= philo.h
+HEADER		= $(addprefix $(INC_D)/, $(HEADER_F))
 
 # PROJECT OBJECTS
-OBJ			= $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+OBJ			= $(patsubst $(SRC_D)/%.c, $(OBJ_D)/%.o, $(SOURCES))
 OBJ_DIRS	= $(sort $(dir $(OBJ)))
 DEPS		= $(OBJ:.o=.d)
 
-
-# TOOLS
-CC			= cc
-CFLAGS		= -Wall -Wextra -Werror
-CGENERAL	= -O2
-CFAST		= -O3
-CDEBUG		= -g3 -O0
-MAKE_QUIET	= --no-print-directory
-
-# REMOVE
-RMFILE = rm -f
-RMDIR = rm -rf
-
-# MAKE DIRECTORY
-MKDIR		= mkdir -p
-
-# INCLUDE PATHS AND LIBRARIES
-INC			= -I. -I$(INC_DIR)
-LIBS		= 
-
-# MESSAGES
-START		= @echo "==== THOMASROFF MAKEFILE =============" \
-			  && echo "==== STARTED: $(shell date '+%Y-%m-%d %H:%M:%S') ===="
-BUILD_PROJ	= @echo "==== BUILDING $(PROJECT) ===============" \
-				&& echo "compiling in $(MODE) mode"
-COMPILED	= @echo "$(PROJECT) compiled successfully"
-FINISH		= @echo "==== BUILD COMPLETE ==================" \
-			  && echo "==== FINISHED: $(shell date '+%Y-%m-%d %H:%M:%S') ==="
-SPACER		= @echo ""
-
-ifeq ($(DEBUG),1)
-CFLAGS		+= $(CDEBUG)
-else
-CFLAGS		+= $(CGENERAL)
-endif
+# MAC INCLUDE PATHS AND LIBRARIES
+INC			= -I. -I$(INC_D)
 
 # <<<<<<< MAIN TARGETS >>>>>>>
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(START)
-	$(BUILD_PROJ)
-	@$(CC) $(CFLAGS) $(INC) $(OBJ) $(LIBS) -o $(NAME)
-	$(COMPILED)
-	$(FINISH)
+	$(CC) $(CFLAGS) $(INC) $(OBJ) $(LIBS) -o $(NAME)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER)
-	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(OBJ_DIRS):
+	mkdir -p $@
+
+$(OBJ_D)/%.o: $(SRC_D)/%.c $(HEADER) | $(OBJ_DIRS)
+	$(CC) $(CFLAGS) $(INC) -MMD -c $< -o $@
 
 -include $(DEPS)
 
 .SECONDARY: $(OBJ) 
 
-# <<<<<<< MAIN PHONY TARGETS >>>>>>>
+# <<<<<<< PHONY TARGETS >>>>>>>
 
-debug:
-	@$(MAKE) DEBUG=1 re $(MAKE_QUIET)
-
-release:
-	@$(MAKE) DEBUG=0 re $(MAKE_QUIET)
+.PHONY: all clean fclean re
 
 clean:
-	@echo "Removing object files"
-	@$(RMDIR) obj
+	rm -rf obj
 
-fclean:
-	@echo "Removing object files"
-	@$(RMDIR) obj
-	@echo "Removing static library files"
-	@$(RMFILE) $(NAME)
+fclean: clean
+	rm -f $(NAME)
 
 re: fclean all
-
-# <<<<<<< EXTRA PHONY TARGETS >>>>>>>
-
-run: $(NAME)
-	@echo "Running $(NAME)..."
-	@./$(NAME)
-
-runval: $(NAME)
-	@echo "Running valgrind $(NAME)..."
-	@valgrind --leak-check=full --suppressions=mac.supp ./$(NAME)
-
-runleak: $(NAME)
-	@echo "Running valgrind leaks $(NAME)..."
-	@valgrind --leak-check=full --show-leak-kinds=yes --track-fds=all --suppressions=mac.supp ./$(NAME)
-
-retry: clean all run
-
-reval: debug runval
-
-releak: debug runleak
-
-.PHONY: all clean fclean re debug release run runval runleak retry reval releak
