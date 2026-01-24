@@ -6,47 +6,16 @@
 /*   By: thblack- <thblack-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:10:04 by thblack-          #+#    #+#             */
-/*   Updated: 2026/01/24 10:39:39 by thblack-         ###   ########.fr       */
+/*   Updated: 2026/01/24 11:50:31 by thblack-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-#include <stdatomic.h>
 
-int	threads_and_forks_init(t_data *v)
-{
-	uint32_t	i;
-
-	v->t = malloc(sizeof(pthread_t) * (v->n + 1));
-	v->f = malloc(sizeof(atomic_bool) * v->n);
-	v->flock = malloc(sizeof(pthread_mutex_t) * v->n);
-	v->ate = malloc(sizeof(atomic_uint_fast32_t) * v->n);
-	v->eating = malloc(sizeof(atomic_bool) * v->n);
-	v->dead = malloc(sizeof(atomic_bool) * v->n);
-	v->done = malloc(sizeof(atomic_bool) * v->n);
-	if (!v->t || !v->f || !v->flock || !v->ate || !v->dead || !v->done)
-		return (ft_error("malloc() fail", v));
-	i = 0;
-	while (i < v->n)
-	{
-		memset(&v->t[i], 0, sizeof(pthread_t));
-		v->f[i] = false;
-		memset(&v->flock[i], 0, sizeof(pthread_mutex_t));
-		if (pthread_mutex_init(&v->flock[i], NULL))
-			return (ft_error("pthread_mutex_init() fail", NULL));
-		v->ate[i] = 0;
-		v->eating[i] = false;
-		v->dead[i] = false;
-		v->done[i] = false;
-		i++;
-	}
-	return (SUCCESS);
-}
+static int	multi_philo(t_data *v);
 
 int	threads_run(t_data *v)
 {
-	uint32_t	i;
-
 	if (time_init(&v->start) == ERROR)
 		return (ft_error("time_init() fail", NULL));
 	if (pthread_create(&v->t[0], NULL, monitor, v))
@@ -54,49 +23,86 @@ int	threads_run(t_data *v)
 	if (v->n == 1)
 	{
 		if (pthread_create(&v->t[1], NULL, philo_lonely, v))
+		{
+			v->err_i = 1;
 			return (ft_error("pthread_create() fail", v));
+		}
 		return (SUCCESS);
 	}
+	if (multi_philo(v) == ERROR)
+		return (ft_error("multi_philo() fail", NULL));
+	return (SUCCESS);
+}
+
+static int	multi_philo(t_data *v)
+{
+	uint32_t	i;
+
 	i = 1;
 	while (i < v->n + 1)
 	{
 		if (i % 2 == ODD)
+		{
 			if (pthread_create(&v->t[i], NULL, philo_odd, v))
+			{
+				v->err_i = i;
 				return (ft_error("pthread_create() fail", v));
+			}
+		}
 		if (i % 2 == EVEN)
+		{
 			if (pthread_create(&v->t[i], NULL, philo_even, v))
+			{
+				v->err_i = i;
 				return (ft_error("pthread_create() fail", v));
+			}
+		}
 		i++;
+	}
+	return (SUCCESS);
+}
+
+static int	close_thread(pthread_t *t, uint32_t i, t_data *v)
+{
+	void		*return_val;
+	long		exit_code;
+
+	if (pthread_join(*t, &return_val))
+		return (ft_error("pthread_join() fail", v));
+	exit_code = (long)return_val;
+	if (exit_code != 0)
+	{
+		printf("%u error: %ld\n", i, exit_code);
+		return (ft_error("thread fail", v));
 	}
 	return (SUCCESS);
 }
 
 int	threads_join(t_data *v)
 {
-	void		*return_val;
-	long		exit_code;
+	uint32_t	n;
 	uint32_t	i;
+	int			flag;
 
+	flag = SUCCESS;
+	if (v->err_i > 0)
+		n = v->err_i - 1;
+	else
+		n = v->n;
 	i = 1;
-	while (i < v->n + 1)
+	while (i < n + 1)
 	{
-		if (pthread_join(v->t[i], &return_val))
-			return (ft_error("pthread_join() fail", v));
-		exit_code = (long)return_val;
-		if (exit_code != 0)
+		if (close_thread(&v->t[i], i, v) == ERROR)
 		{
-			printf("%u error: %ld\n", i, exit_code);
-			return (ft_error("thread fail", v));
+			flag = ERROR;
+			ft_error("close_thread() fail", v);
 		}
 		i++;
 	}
-	if (pthread_join(v->t[0], &return_val))
-		return (ft_error("pthread_join() fail", v));
-	exit_code = (long)return_val;
-	if (exit_code != 0)
+	if (close_thread(&v->t[0], 0, v) == ERROR)
 	{
-		printf("%u error: %ld\n", 0, exit_code);
-		return (ft_error("thread fail", v));
+		flag = ERROR;
+		return (ft_error("close_thread() fail", v));
 	}
-	return (SUCCESS);
+	return (flag);
 }
