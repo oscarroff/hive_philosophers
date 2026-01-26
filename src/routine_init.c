@@ -55,12 +55,16 @@ static int	wait_turn(t_philo *p, t_data *v)
 		return (SUCCESS);
 	else if (p->x % 2 == EVEN)
 	{
+		if (what_you_doing("thinking", p, v) == ERROR)
+			return (ft_error("what_you_doing() fail"));
 		if (ft_usleep(v->eat * 0.8, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail"));
 		return (SUCCESS);
 	}
 	else
 	{
+		if (what_you_doing("thinking", p, v) == ERROR)
+			return (ft_error("what_you_doing() fail"));
 		if (ft_usleep(v->eat * 1.6, &v->end) == ERROR)
 			return (ft_error("ft_usleep() fail"));
 		return (SUCCESS);

@@ -44,10 +44,7 @@ int	what_you_doing(char *s, t_philo *p, t_data *v)
 		v->eating[p->x -1] = true;
 	}
 	if (s[1] == SLEEPING)
-	{
 		v->eating[p->x -1] = false;
-		p->meals++;
-	}
 	if (pthread_mutex_lock(&v->m))
 		return (ft_error("pthread_mutex_lock() fail"));
 	if (v->end == false)

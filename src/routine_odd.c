@@ -32,7 +32,7 @@ void	*philo_odd(void *data)
 		}
 		if (go_eat_odd(&p, v) == ERROR)
 			return ((void *)-1);
-		if (v->end == false)
+		if (v->end == false && (p.meals < v->fed && v->fed > 0))
 			if (go_sleep(&p, v) == ERROR)
 				return ((void *)-1);
 		if (v->think > 0 && v->end == false)
@@ -51,6 +51,7 @@ static int	go_eat_odd(t_philo *p, t_data *v)
 		return (ft_error("ft_usleep() fail"));
 	if (return_cutlery(p, v) == ERROR)
 		return (ft_error("return_cutlery() fail"));
+	p->meals++;
 	return (SUCCESS);
 }
 
