@@ -21,32 +21,32 @@ The key to unlocking this final problem was making use of the thinking time. Unt
 ## Data Structures ##
 ### Parent Program ###
 Struct for shared program variables
-n: number of philosophers
-die: time until a philosopher will die after starting their last meal
-eat: time a philosopher will spend eating
-sleep: time a philosopher will spend sleeping
-think: minimum time a philosopher will spend thinking
-fed: number of times each philosopher must eat before simulation end
-i: counter for philosophers used to assign 'x' in t_philo
-f: forks, an array of bools, either unused (false) or used (true)
-flock: the fork locks, a array of mutexes
-ate: timestamp of last meal in miliseconds
-Philosopher states in bool arrays:
-		eating: eating (true) or not (false)
-		dead: dead (true) or alive (false)
-		done: ate "fed" number of times and exits
-end: flag to end simulation if a philosopher dies
-t: system IDs of all threads
-m: mutex lock
-err_i: counter for if mutex or thread creation fails
+- n: number of philosophers
+- die: time until a philosopher will die after starting their last meal
+- eat: time a philosopher will spend eating
+- sleep: time a philosopher will spend sleeping
+- think: minimum time a philosopher will spend thinking
+- fed: number of times each philosopher must eat before simulation end
+- i: counter for philosophers used to assign 'x' in t_philo
+- f: forks, an array of bools, either unused (false) or used (true)
+- flock: the fork locks, a array of mutexes
+- ate: timestamp of last meal in miliseconds
+- Philosopher states in bool arrays:
+    -- eating: eating (true) or not (false)
+    -- dead: dead (true) or alive (false)
+    -- done: ate "fed" number of times and exits
+- end: flag to end simulation if a philosopher dies
+- t: system IDs of all threads
+- m: mutex lock
+- err_i: counter for if mutex or thread creation fails
 ### Philosophers ###
-Struct for each philosopher
-x: unique number of each philosopher
-meals: number of times a philosopher has eaten
-fork_l: fork to left of philosopher
-fork_r: fork to right of philosopher
-lock_l: lock for fork to left of philosopher
-lock_r: lock for fork to right of philosopher
+- Struct for each philosopher
+- x: unique number of each philosopher
+- meals: number of times a philosopher has eaten
+- fork_l: fork to left of philosopher
+- fork_r: fork to right of philosopher
+- lock_l: lock for fork to left of philosopher
+- lock_r: lock for fork to right of philosopher
 
 ## Usage ##
 Philosophers usage:
@@ -59,4 +59,4 @@ Philosophers usage:
   eaten this number of times then simulation stops, otherwise it runs until
   someone dies
 
-  *Oscar Roff January 2026*
+*Oscar Roff January 2026*
