@@ -32,15 +32,15 @@ Struct for shared program variables
 - flock: the fork locks, a array of mutexes
 - ate: timestamp of last meal in miliseconds
 - Philosopher states in bool arrays:
-    -- eating: eating (true) or not (false)
-    -- dead: dead (true) or alive (false)
-    -- done: ate "fed" number of times and exits
+  - eating: eating (true) or not (false)
+  - dead: dead (true) or alive (false)
+  - done: ate "fed" number of times and exits
 - end: flag to end simulation if a philosopher dies
 - t: system IDs of all threads
 - m: mutex lock
 - err_i: counter for if mutex or thread creation fails
 ### Philosophers ###
-- Struct for each philosopher
+Struct for each philosopher
 - x: unique number of each philosopher
 - meals: number of times a philosopher has eaten
 - fork_l: fork to left of philosopher
